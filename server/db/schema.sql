@@ -1,20 +1,13 @@
--- The complete shape of the database. Safe to run against an empty database,
--- and safe to run twice.
---
--- This file is committed on purpose. Your schema is a fact about your
--- application, not a runtime concern: it should be readable by opening a file
--- rather than by connecting to a server. It is also what lets you move to a
--- hosted database in one command.
+-- The database structure for PokéBinder.
+-- This table stores the cards belonging to the application's single user.
 
-CREATE TABLE IF NOT EXISTS sightings (
+CREATE TABLE IF NOT EXISTS cards (
   id          SERIAL PRIMARY KEY,
-  place       TEXT        NOT NULL,
-  description TEXT        NOT NULL DEFAULT '',
-  spookiness  INTEGER     NOT NULL CHECK (spookiness BETWEEN 1 AND 5),
-  reported_at TIMESTAMPTZ NOT NULL DEFAULT now()
+  name        TEXT NOT NULL,
+  set         TEXT NOT NULL,
+  card_number TEXT NOT NULL,
+  rarity      TEXT NOT NULL,
+  condition   TEXT NOT NULL,
+  quantity    INTEGER NOT NULL DEFAULT 1 CHECK (quantity > 0),
+  image       TEXT NOT NULL DEFAULT ''
 );
-
--- The list page always sorts newest first. Without this the database reads
--- every row and sorts it on each request.
-CREATE INDEX IF NOT EXISTS sightings_reported_at_idx
-  ON sightings (reported_at DESC);

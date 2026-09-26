@@ -1,16 +1,56 @@
 import express from 'express'
 import cors from 'cors'
 import { pool } from './db/pool.js'
-import * as sightings from './sightingsRepo.js'
+import * as cards from './cardsRepo.js'
 
 const app = express()
 
-// CORS before the routes. Middleware registered after a route never sees that
-// route's requests, which is the m4 lesson showing up in production.
-//
-// Name your origins. app.use(cors()) with no options sends
-// Access-Control-Allow-Origin: *, which lets any site on the internet call this
-// API from a visitor's browser, and is incompatible with cookies.
+// Basic Authentication protects the API.
+function basicAuth(request, response, next) {
+  const configuredUsername = process.env.BASIC_AUTH_USERNAME
+  const configuredPassword = process.env.BASIC_AUTH_PASSWORD
+  const authorization = request.headers.authorization
+
+  if (!configuredUsername || !configuredPassword) {
+    console.error('Basic Authentication credentials are not configured')
+    return response
+      .status(500)
+      .json({ error: 'Server authentication is not configured' })
+  }
+
+  if (!authorization || !authorization.startsWith('Basic ')) {
+    response.setHeader('WWW-Authenticate', 'Basic realm="Pok-Binder"')
+    return response.status(401).json({ error: 'Authentication required' })
+  }
+
+  const encodedCredentials = authorization.slice('Basic '.length)
+  const decodedCredentials = Buffer.from(
+    encodedCredentials,
+    'base64'
+  ).toString('utf8')
+
+  const separator = decodedCredentials.indexOf(':')
+
+  if (separator === -1) {
+    response.setHeader('WWW-Authenticate', 'Basic realm="Pok-Binder"')
+    return response.status(401).json({ error: 'Invalid authentication' })
+  }
+
+  const username = decodedCredentials.slice(0, separator)
+  const password = decodedCredentials.slice(separator + 1)
+
+  if (
+    username !== configuredUsername ||
+    password !== configuredPassword
+  ) {
+    response.setHeader('WWW-Authenticate', 'Basic realm="Pok-Binder"')
+    return response.status(401).json({ error: 'Invalid credentials' })
+  }
+
+  next()
+}
+
+// CORS
 const allowedOrigins = (process.env.CORS_ORIGINS || 'http://localhost:5173')
   .split(',')
   .map((origin) => origin.trim())
@@ -18,14 +58,14 @@ const allowedOrigins = (process.env.CORS_ORIGINS || 'http://localhost:5173')
 
 app.use(cors({ origin: allowedOrigins }))
 app.use(express.json({ limit: '100kb' }))
+app.use(basicAuth)
 
-// Is the process alive?
+// Health check
 app.get('/healthz', (request, response) => {
   response.json({ ok: true })
 })
 
-// Is the database reachable? A different question, and the one that tells you
-// in two seconds which half of a problem you have.
+// Database readiness check
 app.get('/readyz', async (request, response) => {
   try {
     await pool.query('SELECT 1')
@@ -36,90 +76,185 @@ app.get('/readyz', async (request, response) => {
   }
 })
 
-// Validation lives on the server because the client can be bypassed. The
-// browser form is for a fast, friendly message; this is for correctness.
+// Validate card data
 function validate(body) {
   const errors = []
-  const place = typeof body.place === 'string' ? body.place.trim() : ''
-  const description =
-    typeof body.description === 'string' ? body.description.trim() : ''
-  const spookiness = Number(body.spookiness)
 
-  if (!place) errors.push('place is required')
-  if (place.length > 120) errors.push('place must be 120 characters or fewer')
-  if (description.length > 2000) errors.push('description must be 2000 characters or fewer')
-  if (!Number.isInteger(spookiness) || spookiness < 1 || spookiness > 5) {
-    errors.push('spookiness must be a whole number from 1 to 5')
+  const name = typeof body.name === 'string' ? body.name.trim() : ''
+  const set = typeof body.set === 'string' ? body.set.trim() : ''
+  const cardNumber =
+    typeof body.cardNumber === 'string'
+      ? body.cardNumber.trim()
+      : ''
+  const rarity =
+    typeof body.rarity === 'string'
+      ? body.rarity.trim()
+      : ''
+  const condition =
+    typeof body.condition === 'string'
+      ? body.condition.trim()
+      : ''
+  const quantity = Number(body.quantity)
+  const image =
+    typeof body.image === 'string'
+      ? body.image.trim()
+      : ''
+
+  if (!name) errors.push('name is required')
+  if (!set) errors.push('set is required')
+  if (!cardNumber) errors.push('cardNumber is required')
+  if (!rarity) errors.push('rarity is required')
+  if (!condition) errors.push('condition is required')
+
+  if (
+    !Number.isInteger(quantity) ||
+    quantity < 1
+  ) {
+    errors.push('quantity must be a whole number greater than 0')
   }
 
-  return { errors, value: { place, description, spookiness } }
+  if (name.length > 120) {
+    errors.push('name must be 120 characters or fewer')
+  }
+
+  if (set.length > 120) {
+    errors.push('set must be 120 characters or fewer')
+  }
+
+  if (cardNumber.length > 50) {
+    errors.push('cardNumber must be 50 characters or fewer')
+  }
+
+  if (rarity.length > 80) {
+    errors.push('rarity must be 80 characters or fewer')
+  }
+
+  if (condition.length > 80) {
+    errors.push('condition must be 80 characters or fewer')
+  }
+
+  return {
+    errors,
+    value: {
+      name,
+      set,
+      cardNumber,
+      rarity,
+      condition,
+      quantity,
+      image
+    }
+  }
 }
 
-app.get('/api/sightings', async (request, response, next) => {
+// Get all cards
+app.get('/api/cards', async (request, response, next) => {
   try {
-    response.json(await sightings.getAll(pool))
+    response.json(await cards.getAll(pool))
   } catch (error) {
     next(error)
   }
 })
 
-app.get('/api/sightings/:id', async (request, response, next) => {
+// Get one card
+app.get('/api/cards/:id', async (request, response, next) => {
   try {
-    const row = await sightings.getById(pool, request.params.id)
-    if (!row) return response.status(404).json({ error: 'Not found' })
+    const row = await cards.getById(pool, request.params.id)
+
+    if (!row) {
+      return response.status(404).json({ error: 'Not found' })
+    }
+
     response.json(row)
   } catch (error) {
     next(error)
   }
 })
 
-app.post('/api/sightings', async (request, response, next) => {
+// Add a card
+app.post('/api/cards', async (request, response, next) => {
   const { errors, value } = validate(request.body ?? {})
-  if (errors.length > 0) return response.status(400).json({ error: errors.join('; ') })
+
+  if (errors.length > 0) {
+    return response.status(400).json({
+      error: errors.join('; ')
+    })
+  }
 
   try {
-    response.status(201).json(await sightings.create(pool, value))
+    response.status(201).json(
+      await cards.create(pool, value)
+    )
   } catch (error) {
     next(error)
   }
 })
 
-app.put('/api/sightings/:id', async (request, response, next) => {
+// Update a card
+app.put('/api/cards/:id', async (request, response, next) => {
   const { errors, value } = validate(request.body ?? {})
-  if (errors.length > 0) return response.status(400).json({ error: errors.join('; ') })
+
+  if (errors.length > 0) {
+    return response.status(400).json({
+      error: errors.join('; ')
+    })
+  }
 
   try {
-    const row = await sightings.update(pool, request.params.id, value)
-    if (!row) return response.status(404).json({ error: 'Not found' })
+    const row = await cards.update(
+      pool,
+      request.params.id,
+      value
+    )
+
+    if (!row) {
+      return response.status(404).json({
+        error: 'Not found'
+      })
+    }
+
     response.json(row)
   } catch (error) {
     next(error)
   }
 })
 
-app.delete('/api/sightings/:id', async (request, response, next) => {
+// Delete a card
+app.delete('/api/cards/:id', async (request, response, next) => {
   try {
-    const removed = await sightings.remove(pool, request.params.id)
-    if (!removed) return response.status(404).json({ error: 'Not found' })
+    const removed = await cards.remove(
+      pool,
+      request.params.id
+    )
+
+    if (!removed) {
+      return response.status(404).json({
+        error: 'Not found'
+      })
+    }
+
     response.status(204).end()
   } catch (error) {
     next(error)
   }
 })
 
+// Unknown route
 app.use((request, response) => {
-  response.status(404).json({ error: 'No such route' })
+  response.status(404).json({
+    error: 'No such route'
+  })
 })
 
-// The detail goes in your logs; the visitor gets a plain message. Sending a
-// stack trace to a stranger tells them about your file layout and dependencies.
+// Safe server error
 app.use((error, request, response, next) => {
   console.error(error)
-  response.status(500).json({ error: 'Something went wrong on the server' })
+  response.status(500).json({
+    error: 'Something went wrong on the server'
+  })
 })
 
-// The host chooses the port and tells you through PORT. Hardcoding 3000 is the
-// commonest reason a first deploy is marked unhealthy and killed.
+// Start server
 const port = process.env.PORT || 3000
 
 app.listen(port, () => {
