@@ -1,168 +1,101 @@
 import { useEffect, useMemo, useState } from 'react'
+import './styles.css'
 
 const API_BASE_URL =
   import.meta.env.VITE_API_BASE_URL || 'http://localhost:3000'
 
-const USE_MOCK_API = import.meta.env.VITE_USE_MOCK_API !== 'false'
+const USE_MOCK_API =
+  import.meta.env.VITE_USE_MOCK_API !== 'false'
 
-const emptyForm = {
+const EMPTY_CARD = {
   name: '',
   set: '',
   cardNumber: '',
-  rarity: '',
+  rarity: 'Common',
   condition: 'Near Mint',
   quantity: 1,
   image: '',
 }
 
-const rarityOptions = [
-  'Common',
-  'Uncommon',
-  'Rare',
-  'Double Rare',
-  'Ultra Rare',
-  'Illustration Rare',
-  'Special Illustration Rare',
-  'Hyper Rare',
-  'Promo',
-]
-
-const conditionOptions = [
-  'Near Mint',
-  'Lightly Played',
-  'Moderately Played',
-  'Heavily Played',
-  'Damaged',
-]
-
-function getCardNumber(card) {
-  return card.card_number ?? card.cardNumber ?? ''
-}
-
-function normalizeCard(card) {
-  return {
-    ...card,
-    cardNumber: getCardNumber(card),
-    quantity: Number(card.quantity || 1),
-  }
-}
+const MOCK_CARDS = []
 
 function App() {
   const [page, setPage] = useState('home')
   const [cards, setCards] = useState([])
   const [selectedCard, setSelectedCard] = useState(null)
-  const [editingId, setEditingId] = useState(null)
-
-  const [form, setForm] = useState(emptyForm)
-  const [search, setSearch] = useState('')
-  const [rarityFilter, setRarityFilter] = useState('All')
+  const [editingCard, setEditingCard] = useState(null)
 
   const [loading, setLoading] = useState(true)
-  const [saving, setSaving] = useState(false)
   const [error, setError] = useState('')
 
-  async function loadCards() {
-    setLoading(true)
-    setError('')
+  const [search, setSearch] = useState('')
+  const [rarityFilter, setRarityFilter] = useState('All Rarities')
 
-    try {
-      if (USE_MOCK_API) {
-        setCards([])
-        return
-      }
+  const [form, setForm] = useState(EMPTY_CARD)
+  const [saving, setSaving] = useState(false)
 
-      const response = await fetch(`${API_BASE_URL}/api/cards`)
-
-      if (!response.ok) {
-        throw new Error(`Failed to load cards (${response.status})`)
-      }
-
-      const data = await response.json()
-      setCards(Array.isArray(data) ? data.map(normalizeCard) : [])
-    } catch (err) {
-      console.error(err)
-      setError('Could not connect to the card database.')
-      setCards([])
-    } finally {
-      setLoading(false)
-    }
-  }
+  /* =========================================================
+     LOAD CARDS
+  ========================================================= */
 
   useEffect(() => {
     loadCards()
   }, [])
 
-  const filteredCards = useMemo(() => {
-    const query = search.trim().toLowerCase()
-
-    return cards.filter((card) => {
-      const matchesSearch =
-        !query ||
-        card.name?.toLowerCase().includes(query) ||
-        card.set?.toLowerCase().includes(query) ||
-        getCardNumber(card).toLowerCase().includes(query)
-
-      const matchesRarity =
-        rarityFilter === 'All' || card.rarity === rarityFilter
-
-      return matchesSearch && matchesRarity
-    })
-  }, [cards, search, rarityFilter])
-
-  const stats = useMemo(() => {
-    const totalCards = cards.reduce(
-      (total, card) => total + Number(card.quantity || 1),
-      0
-    )
-
-    const uniqueCards = cards.length
-
-    const sets = new Set(
-      cards.map((card) => card.set).filter(Boolean)
-    ).size
-
-    const rarities = new Set(
-      cards.map((card) => card.rarity).filter(Boolean)
-    ).size
-
-    return {
-      totalCards,
-      uniqueCards,
-      sets,
-      rarities,
-    }
-  }, [cards])
-
-  function navigate(nextPage) {
-    setPage(nextPage)
-    setSelectedCard(null)
+  async function loadCards() {
+    setLoading(true)
     setError('')
 
-    if (nextPage !== 'add') {
-      setEditingId(null)
+    if (USE_MOCK_API) {
+      setCards(MOCK_CARDS)
+      setLoading(false)
+      return
     }
+
+    try {
+      const response = await fetch(`${API_BASE_URL}/api/cards`)
+
+      if (!response.ok) {
+        throw new Error(
+          `Unable to load cards. Server returned ${response.status}.`
+        )
+      }
+
+      const data = await response.json()
+
+      setCards(Array.isArray(data) ? data : [])
+    } catch (err) {
+      console.error(err)
+
+      setError(
+        'Could not connect to the card database. Please make sure the server is running.'
+      )
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  /* =========================================================
+     NAVIGATION
+  ========================================================= */
+
+  function goHome() {
+    setPage('home')
+    setSelectedCard(null)
+    setEditingCard(null)
+    setError('')
+  }
+
+  function goCollection() {
+    setPage('collection')
+    setSelectedCard(null)
+    setEditingCard(null)
+    setError('')
   }
 
   function startAdd() {
-    setForm(emptyForm)
-    setEditingId(null)
-    setSelectedCard(null)
-    setError('')
-    setPage('add')
-  }
-
-  function startEdit(card) {
-    setForm({
-      name: card.name || '',
-      set: card.set || '',
-      cardNumber: getCardNumber(card),
-      rarity: card.rarity || '',
-      condition: card.condition || 'Near Mint',
-      quantity: Number(card.quantity || 1),
-      image: card.image || '',
-    })
-
-    setEditingId(card.id)
+    setForm(EMPTY_CARD)
+    setEditingCard(null)
     setSelectedCard(null)
     setError('')
     setPage('add')
@@ -170,720 +103,1386 @@ function App() {
 
   function openCard(card) {
     setSelectedCard(card)
-    setPage('details')
+    setEditingCard(null)
     setError('')
+    setPage('details')
   }
 
-  function updateForm(event) {
-    const { name, value } = event.target
+  function startEdit(card) {
+    setEditingCard(card)
 
+    setForm({
+      name: card.name || '',
+      set: card.set || '',
+      cardNumber: card.cardNumber || '',
+      rarity: card.rarity || 'Common',
+      condition: card.condition || 'Near Mint',
+      quantity: card.quantity ?? 1,
+      image: card.image || '',
+    })
+
+    setSelectedCard(card)
+    setError('')
+    setPage('add')
+  }
+
+  /* =========================================================
+     FORM
+  ========================================================= */
+
+  function updateForm(field, value) {
     setForm((current) => ({
       ...current,
-      [name]: name === 'quantity' ? Number(value) : value,
+      [field]: value,
     }))
   }
 
-  async function saveCard(event) {
+  async function submitCard(event) {
     event.preventDefault()
-    setSaving(true)
+
     setError('')
 
-    const payload = {
+    const quantity = Number(form.quantity)
+
+    if (!form.name.trim()) {
+      setError('Please enter the card name.')
+      return
+    }
+
+    if (!form.set.trim()) {
+      setError('Please enter the card set.')
+      return
+    }
+
+    if (!form.cardNumber.trim()) {
+      setError('Please enter the card number.')
+      return
+    }
+
+    if (!Number.isInteger(quantity) || quantity < 1) {
+      setError('Quantity must be at least 1.')
+      return
+    }
+
+    const cardData = {
       name: form.name.trim(),
       set: form.set.trim(),
       cardNumber: form.cardNumber.trim(),
       rarity: form.rarity,
       condition: form.condition,
-      quantity: Number(form.quantity),
+      quantity,
       image: form.image.trim(),
     }
 
-    try {
-      if (USE_MOCK_API) {
-        const mockCard = {
-          id: editingId || Date.now(),
-          ...payload,
+    setSaving(true)
+
+    if (USE_MOCK_API) {
+      if (editingCard) {
+        setCards((current) =>
+          current.map((card) =>
+            card.id === editingCard.id
+              ? {
+                  ...card,
+                  ...cardData,
+                }
+              : card
+          )
+        )
+      } else {
+        const newCard = {
+          id: Date.now(),
+          ...cardData,
         }
 
-        setCards((current) =>
-          editingId
-            ? current.map((card) =>
-                card.id === editingId ? mockCard : card
-              )
-            : [mockCard, ...current]
-        )
-
-        setPage('collection')
-        setForm(emptyForm)
-        setEditingId(null)
-        return
+        setCards((current) => [newCard, ...current])
       }
 
-      const url = editingId
-        ? `${API_BASE_URL}/api/cards/${editingId}`
+      setSaving(false)
+
+      setPage('collection')
+      setSelectedCard(null)
+      setEditingCard(null)
+
+      return
+    }
+
+    try {
+      const url = editingCard
+        ? `${API_BASE_URL}/api/cards/${editingCard.id}`
         : `${API_BASE_URL}/api/cards`
 
+      const method = editingCard ? 'PUT' : 'POST'
+
       const response = await fetch(url, {
-        method: editingId ? 'PUT' : 'POST',
+        method,
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify(payload),
+        body: JSON.stringify(cardData),
       })
 
       if (!response.ok) {
         const message = await response.text()
-        throw new Error(message || `Request failed (${response.status})`)
+
+        throw new Error(
+          message || `Request failed with status ${response.status}.`
+        )
       }
 
       await loadCards()
 
       setPage('collection')
-      setForm(emptyForm)
-      setEditingId(null)
+      setSelectedCard(null)
+      setEditingCard(null)
+      setForm(EMPTY_CARD)
     } catch (err) {
       console.error(err)
-      setError('Could not save the card. Please check the server.')
+
+      setError(
+        err.message || 'Unable to save the card.'
+      )
     } finally {
       setSaving(false)
     }
   }
 
-  async function deleteCard(id) {
+  /* =========================================================
+     DELETE CARD
+  ========================================================= */
+
+  async function deleteCard(card) {
     const confirmed = window.confirm(
-      'Are you sure you want to delete this card?'
+      `Are you sure you want to delete "${card.name}"?`
     )
 
-    if (!confirmed) return
+    if (!confirmed) {
+      return
+    }
 
     setError('')
 
-    try {
-      if (USE_MOCK_API) {
-        setCards((current) => current.filter((card) => card.id !== id))
-        setPage('collection')
-        setSelectedCard(null)
-        return
-      }
+    if (USE_MOCK_API) {
+      setCards((current) =>
+        current.filter((item) => item.id !== card.id)
+      )
 
-      const response = await fetch(`${API_BASE_URL}/api/cards/${id}`, {
-        method: 'DELETE',
-      })
+      setPage('collection')
+      setSelectedCard(null)
+
+      return
+    }
+
+    try {
+      const response = await fetch(
+        `${API_BASE_URL}/api/cards/${card.id}`,
+        {
+          method: 'DELETE',
+        }
+      )
 
       if (!response.ok) {
-        throw new Error(`Delete failed (${response.status})`)
+        const message = await response.text()
+
+        throw new Error(
+          message || `Delete failed with status ${response.status}.`
+        )
       }
 
-      await loadCards()
+      setCards((current) =>
+        current.filter((item) => item.id !== card.id)
+      )
+
       setPage('collection')
       setSelectedCard(null)
     } catch (err) {
       console.error(err)
-      setError('Could not delete the card.')
+
+      setError(
+        err.message || 'Unable to delete the card.'
+      )
     }
   }
 
+  /* =========================================================
+     FILTERED COLLECTION
+  ========================================================= */
+
+  const filteredCards = useMemo(() => {
+    const normalizedSearch = search.trim().toLowerCase()
+
+    return cards.filter((card) => {
+      const matchesSearch =
+        !normalizedSearch ||
+        [
+          card.name,
+          card.set,
+          card.cardNumber,
+          card.rarity,
+          card.condition,
+        ]
+          .filter(Boolean)
+          .some((value) =>
+            String(value)
+              .toLowerCase()
+              .includes(normalizedSearch)
+          )
+
+      const matchesRarity =
+        rarityFilter === 'All Rarities' ||
+        card.rarity === rarityFilter
+
+      return matchesSearch && matchesRarity
+    })
+  }, [cards, search, rarityFilter])
+
+  /* =========================================================
+     STATS
+  ========================================================= */
+
+  const totalCards = cards.reduce(
+    (total, card) =>
+      total + Number(card.quantity || 0),
+    0
+  )
+
+  const uniqueCards = cards.length
+
+  const uniqueSets = new Set(
+    cards
+      .map((card) => card.set)
+      .filter(Boolean)
+  ).size
+
+  const uniqueRarities = new Set(
+    cards
+      .map((card) => card.rarity)
+      .filter(Boolean)
+  ).size
+
+  /* =========================================================
+     APP
+  ========================================================= */
+
   return (
-    <div className="app-shell">
+    <div className="app">
+
+      {/* =====================================================
+          SIDEBAR
+      ===================================================== */}
+
       <aside className="sidebar">
-        <div className="brand">
-          <div className="brand-pokeballs">
-            <img src="/pokeball-logo.png" alt="Poké Ball" />
+
+        <div className="sidebar-brand">
+
+          <img
+            src="/pokeball-logo.png"
+            alt="PokéBinder"
+            className="sidebar-logo"
+          />
+
+          <h1 className="brand-name">
+            PokéBinder
+          </h1>
+
+          <div className="brand-subtitle">
+            YOUR POKÉMON CARD COLLECTION
           </div>
 
-          <h1>PokéBinder</h1>
-          <p>Your Pokémon card collection</p>
         </div>
 
         <nav className="sidebar-nav">
+
           <button
-            className={page === 'home' ? 'nav-item active' : 'nav-item'}
-            onClick={() => navigate('home')}
+            className={`nav-item ${
+              page === 'home' ? 'active' : ''
+            }`}
+            onClick={goHome}
           >
-            <span>⌂</span>
-            Home
+            <span className="nav-icon">⌂</span>
+            <span>Home</span>
           </button>
 
           <button
-            className={page === 'add' ? 'nav-item active' : 'nav-item'}
+            className={`nav-item ${
+              page === 'add' ? 'active' : ''
+            }`}
             onClick={startAdd}
           >
-            <span>＋</span>
-            Add Card
+            <span className="nav-icon">＋</span>
+            <span>Add Card</span>
           </button>
 
           <button
-            className={page === 'collection' ? 'nav-item active' : 'nav-item'}
-            onClick={() => navigate('collection')}
+            className={`nav-item ${
+              page === 'collection' ||
+              page === 'details'
+                ? 'active'
+                : ''
+            }`}
+            onClick={goCollection}
           >
-            <span>▣</span>
-            Collection
+            <span className="nav-icon">▣</span>
+            <span>Collection</span>
           </button>
+
         </nav>
 
-        <div className="sidebar-footer">
-          <div className="sidebar-pokeball">◉</div>
-          <p>Gotta collect 'em all!</p>
+        <div className="sidebar-bottom">
+          <div className="sidebar-mini-ball">
+            <span />
+          </div>
         </div>
+
       </aside>
 
+
+      {/* =====================================================
+          MAIN
+      ===================================================== */}
+
       <main className="main-content">
-        {USE_MOCK_API && (
-          <div className="demo-notice">
-            Demo mode is active. Cards are stored only in this browser session.
-          </div>
-        )}
 
-        {error && <div className="error-banner">{error}</div>}
+        <div className="page-content">
 
-        {page === 'home' && (
-          <HomePage
-            cards={cards}
-            stats={stats}
-            loading={loading}
-            onAdd={startAdd}
-            onCollection={() => navigate('collection')}
-            onOpenCard={openCard}
-          />
-        )}
+          {error && (
+            <div className="error-notice">
+              <span>!</span>
+              {error}
+            </div>
+          )}
 
-        {page === 'collection' && (
-          <CollectionPage
-            cards={filteredCards}
-            totalCards={cards.length}
-            search={search}
-            setSearch={setSearch}
-            rarityFilter={rarityFilter}
-            setRarityFilter={setRarityFilter}
-            onAdd={startAdd}
-            onOpenCard={openCard}
-            loading={loading}
-          />
-        )}
+          {/* =================================================
+              HOME
+          ================================================= */}
 
-        {page === 'add' && (
-          <AddCardPage
-            form={form}
-            editing={Boolean(editingId)}
-            saving={saving}
-            onChange={updateForm}
-            onSubmit={saveCard}
-            onCancel={() => navigate('collection')}
-          />
-        )}
+          {page === 'home' && (
+            <HomePage
+              totalCards={totalCards}
+              uniqueCards={uniqueCards}
+              uniqueSets={uniqueSets}
+              uniqueRarities={uniqueRarities}
+              cards={cards}
+              loading={loading}
+              startAdd={startAdd}
+              openCard={openCard}
+              goCollection={goCollection}
+            />
+          )}
 
-        {page === 'details' && selectedCard && (
-          <CardDetailsPage
-            card={selectedCard}
-            onBack={() => navigate('collection')}
-            onEdit={() => startEdit(selectedCard)}
-            onDelete={() => deleteCard(selectedCard.id)}
-          />
-        )}
+
+          {/* =================================================
+              COLLECTION
+          ================================================= */}
+
+          {page === 'collection' && (
+            <CollectionPage
+              cards={cards}
+              filteredCards={filteredCards}
+              loading={loading}
+              search={search}
+              setSearch={setSearch}
+              rarityFilter={rarityFilter}
+              setRarityFilter={setRarityFilter}
+              startAdd={startAdd}
+              openCard={openCard}
+            />
+          )}
+
+
+          {/* =================================================
+              ADD / EDIT
+          ================================================= */}
+
+          {page === 'add' && (
+            <AddCardPage
+              form={form}
+              updateForm={updateForm}
+              submitCard={submitCard}
+              saving={saving}
+              editingCard={editingCard}
+              goCollection={goCollection}
+              deleteCard={editingCard ? deleteCard : null}
+            />
+          )}
+
+
+          {/* =================================================
+              CARD DETAILS
+          ================================================= */}
+
+          {page === 'details' && selectedCard && (
+            <CardDetailsPage
+              card={selectedCard}
+              goCollection={goCollection}
+              startEdit={startEdit}
+              deleteCard={deleteCard}
+            />
+          )}
+
+        </div>
+
       </main>
+
     </div>
   )
 }
 
-function PageHeader({ eyebrow, title, description, action }) {
-  return (
-    <header className="page-header">
-      <div>
-        {eyebrow && <p className="eyebrow">{eyebrow}</p>}
-        <h2>{title}</h2>
-        {description && <p className="page-description">{description}</p>}
-      </div>
 
-      {action}
-    </header>
-  )
-}
+/* =========================================================
+   HOME PAGE
+========================================================= */
 
 function HomePage({
+  totalCards,
+  uniqueCards,
+  uniqueSets,
+  uniqueRarities,
   cards,
-  stats,
   loading,
-  onAdd,
-  onCollection,
-  onOpenCard,
+  startAdd,
+  openCard,
+  goCollection,
 }) {
   const recentCards = cards.slice(0, 4)
 
   return (
     <>
-      <PageHeader
-        eyebrow="WELCOME BACK, TRAINER"
-        title="Your Pokémon Binder"
-        description="Keep track of your Pokémon TCG collection in one place."
-        action={
-          <button className="primary-button" onClick={onAdd}>
-            ＋ Add Card
-          </button>
-        }
-      />
+      <section className="home-hero">
 
-      <section className="stats-grid">
-        <StatCard
-          icon="▣"
-          label="Total Cards"
-          value={stats.totalCards}
-        />
+        <div className="hero-content">
 
-        <StatCard
-          icon="◈"
-          label="Unique Cards"
-          value={stats.uniqueCards}
-        />
+          <p className="hero-eyebrow">
+            Welcome back, Trainer!
+          </p>
 
-        <StatCard
-          icon="▤"
-          label="Sets"
-          value={stats.sets}
-        />
+          <h2 className="hero-title">
+            Your <span>Pokémon</span> Binder
+          </h2>
 
-        <StatCard
-          icon="★"
-          label="Rarities"
-          value={stats.rarities}
-        />
+          <p className="hero-description">
+            Keep track of your Pokémon TCG collection in one place.
+          </p>
+
+        </div>
+
+        <div className="hero-decoration">
+          <div className="hero-ring">
+            <div className="hero-ring-small" />
+          </div>
+        </div>
+
       </section>
 
-      <section className="content-section">
-        <div className="section-heading">
+
+      {/* =====================================================
+          STATS
+      ===================================================== */}
+
+      <section className="stats-grid">
+
+        <StatCard
+          className="stat-blue"
+          icon="▣"
+          label="TOTAL CARDS"
+          value={totalCards}
+        />
+
+        <StatCard
+          className="stat-yellow"
+          icon="◆"
+          label="UNIQUE CARDS"
+          value={uniqueCards}
+        />
+
+        <StatCard
+          className="stat-red"
+          icon="▤"
+          label="SETS"
+          value={uniqueSets}
+        />
+
+        <StatCard
+          className="stat-green"
+          icon="★"
+          label="RARITIES"
+          value={uniqueRarities}
+        />
+
+      </section>
+
+
+      {/* =====================================================
+          RECENTLY ADDED
+      ===================================================== */}
+
+      <section className="home-panel">
+
+        <div className="panel-heading">
+
           <div>
-            <h3>Recently Added</h3>
-            <p>Your latest cards</p>
+            <h2>Recently Added</h2>
+
+            <p>
+              Your latest Pokémon cards
+            </p>
           </div>
 
           {cards.length > 0 && (
-            <button className="text-button" onClick={onCollection}>
+            <button
+              className="outline-button"
+              onClick={goCollection}
+            >
               View Collection →
             </button>
           )}
+
         </div>
 
+
         {loading ? (
-          <div className="empty-card">
-            <div className="empty-icon">◌</div>
-            <h3>Loading your binder...</h3>
+          <div className="home-loading">
+            Loading your collection...
           </div>
         ) : recentCards.length === 0 ? (
-          <EmptyState onAdd={onAdd} />
+
+          <div className="home-empty-state">
+
+            <div className="empty-game-icon">
+
+              <div className="empty-card">
+                ▣
+              </div>
+
+              <span className="spark spark-one">
+                ✦
+              </span>
+
+              <span className="spark spark-two">
+                ✦
+              </span>
+
+              <span className="spark spark-three">
+                ✦
+              </span>
+
+            </div>
+
+            <h3>
+              Your binder is empty
+            </h3>
+
+            <p>
+              Start building your Pokémon collection today.
+            </p>
+
+            <button
+              className="primary-button"
+              onClick={startAdd}
+            >
+              <span className="button-icon">+</span>
+              Add your first card
+            </button>
+
+          </div>
+
         ) : (
-          <div className="card-grid">
+
+          <div className="recent-card-grid">
+
             {recentCards.map((card) => (
               <CardTile
                 key={card.id}
                 card={card}
-                onClick={() => onOpenCard(card)}
+                onClick={() => openCard(card)}
               />
             ))}
+
           </div>
+
         )}
+
       </section>
 
-      <section className="quick-action">
-        <div className="quick-action-icon">＋</div>
-        <div>
-          <h3>Build your collection</h3>
-          <p>Add your Pokémon cards and keep all their details organized.</p>
+
+      {/* =====================================================
+          BUILD COLLECTION
+      ===================================================== */}
+
+      <section className="home-panel build-panel">
+
+        <div className="panel-heading">
+
+          <div>
+            <h2>Build Your Collection</h2>
+
+            <p>
+              Everything you need to organize your cards.
+            </p>
+          </div>
+
         </div>
-        <button className="secondary-button" onClick={onAdd}>
-          Add your first card
-        </button>
+
+        <div className="feature-grid">
+
+          <FeatureCard
+            className="feature-blue"
+            icon="＋"
+            title="Add Cards"
+            text="Record your Pokémon cards."
+          />
+
+          <FeatureCard
+            className="feature-yellow"
+            icon="⌕"
+            title="Search"
+            text="Find cards quickly."
+          />
+
+          <FeatureCard
+            className="feature-pink"
+            icon="◆"
+            title="Organize"
+            text="Keep your collection tidy."
+          />
+
+          <FeatureCard
+            className="feature-green"
+            icon="★"
+            title="Track"
+            text="Keep quantities updated."
+          />
+
+        </div>
+
       </section>
     </>
   )
 }
 
-function StatCard({ icon, label, value }) {
-  return (
-    <div className="stat-card">
-      <div className="stat-icon">{icon}</div>
 
-      <div>
-        <p>{label}</p>
-        <strong>{value}</strong>
-      </div>
-    </div>
-  )
-}
-
-function EmptyState({ onAdd }) {
-  return (
-    <div className="empty-card">
-      <div className="empty-pokeball">
-        <img src="/pokeball-logo.png" alt="" />
-      </div>
-
-      <h3>Your binder is empty</h3>
-
-      <p>
-        Start building your collection by adding your first Pokémon card.
-      </p>
-
-      <button className="primary-button" onClick={onAdd}>
-        ＋ Add Card
-      </button>
-    </div>
-  )
-}
+/* =========================================================
+   COLLECTION PAGE
+========================================================= */
 
 function CollectionPage({
   cards,
-  totalCards,
+  filteredCards,
+  loading,
   search,
   setSearch,
   rarityFilter,
   setRarityFilter,
-  onAdd,
-  onOpenCard,
-  loading,
+  startAdd,
+  openCard,
 }) {
   return (
-    <>
-      <PageHeader
-        eyebrow="YOUR COLLECTION"
-        title="Card Collection"
-        description={`${totalCards} unique card${
-          totalCards === 1 ? '' : 's'
-        } in your binder`}
-        action={
-          <button className="primary-button" onClick={onAdd}>
-            ＋ Add Card
-          </button>
-        }
-      />
+    <div className="collection-page">
 
-      <section className="collection-toolbar">
-        <div className="search-box">
-          <span>⌕</span>
-          <input
-            value={search}
-            onChange={(event) => setSearch(event.target.value)}
-            placeholder="Search by name, set, or card number..."
-          />
-        </div>
+      {/* =====================================================
+          COLLECTION HERO
+          NOTE: NO ADD CARD BUTTON HERE.
+      ===================================================== */}
 
-        <select
-          value={rarityFilter}
-          onChange={(event) => setRarityFilter(event.target.value)}
-        >
-          <option value="All">All Rarities</option>
+      <section className="collection-hero">
 
-          {rarityOptions.map((rarity) => (
-            <option key={rarity} value={rarity}>
-              {rarity}
-            </option>
-          ))}
-        </select>
-      </section>
+        <div className="collection-hero-content">
 
-      {loading ? (
-        <div className="empty-card">
-          <div className="empty-icon">◌</div>
-          <h3>Loading cards...</h3>
-        </div>
-      ) : cards.length === 0 ? (
-        <div className="empty-card">
-          <div className="empty-icon">⌕</div>
-          <h3>No cards found</h3>
-          <p>
-            {totalCards === 0
-              ? 'Your collection is empty. Add your first card to get started.'
-              : 'Try changing your search or rarity filter.'}
+          <p className="page-eyebrow">
+            Your Collection
           </p>
 
-          {totalCards === 0 && (
-            <button className="primary-button" onClick={onAdd}>
-              ＋ Add Card
-            </button>
-          )}
+          <h1>
+            Card Collection
+          </h1>
+
+          <p>
+            {cards.length === 0
+              ? '0 unique cards in your binder'
+              : `${cards.length} unique ${
+                  cards.length === 1 ? 'card' : 'cards'
+                } in your binder`}
+          </p>
+
         </div>
+
+      </section>
+
+
+      {/* =====================================================
+          SEARCH + FILTER
+      ===================================================== */}
+
+      <div className="collection-toolbar">
+
+        <div className="collection-tools">
+
+          <label className="search-box">
+
+            <span>⌕</span>
+
+            <input
+              type="text"
+              value={search}
+              onChange={(event) =>
+                setSearch(event.target.value)
+              }
+              placeholder="Search by name, set, or card number..."
+            />
+
+          </label>
+
+
+          <select
+            className="rarity-filter"
+            value={rarityFilter}
+            onChange={(event) =>
+              setRarityFilter(event.target.value)
+            }
+          >
+            <option>All Rarities</option>
+            <option>Common</option>
+            <option>Uncommon</option>
+            <option>Rare</option>
+            <option>Double Rare</option>
+            <option>Ultra Rare</option>
+            <option>Illustration Rare</option>
+            <option>Special Illustration Rare</option>
+            <option>Hyper Rare</option>
+          </select>
+
+        </div>
+
+
+        <div className="collection-count">
+          {filteredCards.length}{' '}
+          {filteredCards.length === 1
+            ? 'card'
+            : 'cards'}
+        </div>
+
+      </div>
+
+
+      {/* =====================================================
+          COLLECTION CONTENT
+      ===================================================== */}
+
+      {loading ? (
+
+        <div className="page-empty">
+
+          <div className="empty-loader" />
+
+          <h2>
+            Loading collection...
+          </h2>
+
+          <p>
+            Please wait while your cards are loaded.
+          </p>
+
+        </div>
+
+      ) : cards.length === 0 ? (
+
+        <div className="page-empty">
+
+          <div className="large-empty-icon">
+            ▣
+          </div>
+
+          <h2>
+            Your Collection Is Empty
+          </h2>
+
+          <p>
+            Add your first Pokémon card to get started.
+          </p>
+
+          <button
+            className="primary-button"
+            onClick={startAdd}
+          >
+            <span className="button-icon">+</span>
+            Add Card
+          </button>
+
+        </div>
+
+      ) : filteredCards.length === 0 ? (
+
+        <div className="page-empty">
+
+          <div className="large-empty-icon">
+            ⌕
+          </div>
+
+          <h2>
+            No Cards Found
+          </h2>
+
+          <p>
+            Try changing your search or rarity filter.
+          </p>
+
+        </div>
+
       ) : (
-        <div className="card-grid collection-grid">
-          {cards.map((card) => (
+
+        <div className="collection-grid">
+
+          {filteredCards.map((card) => (
             <CardTile
               key={card.id}
               card={card}
-              onClick={() => onOpenCard(card)}
+              onClick={() => openCard(card)}
             />
           ))}
+
         </div>
+
       )}
-    </>
+
+    </div>
   )
 }
 
-function CardTile({ card, onClick }) {
-  return (
-    <button className="pokemon-card" onClick={onClick}>
-      <div className="card-image">
-        {card.image ? (
-          <img src={card.image} alt={card.name} />
-        ) : (
-          <div className="card-placeholder">⚡</div>
-        )}
-      </div>
 
-      <div className="card-info">
-        <div className="card-title-row">
-          <h3>{card.name || 'Unnamed Card'}</h3>
-
-          <span className="quantity-badge">
-            ×{Number(card.quantity || 1)}
-          </span>
-        </div>
-
-        <p className="card-set">{card.set || 'No set specified'}</p>
-
-        <div className="card-meta">
-          <span>{getCardNumber(card) || '—'}</span>
-
-          {card.rarity && <span>{card.rarity}</span>}
-        </div>
-      </div>
-    </button>
-  )
-}
+/* =========================================================
+   ADD CARD PAGE
+========================================================= */
 
 function AddCardPage({
   form,
-  editing,
+  updateForm,
+  submitCard,
   saving,
-  onChange,
-  onSubmit,
-  onCancel,
+  editingCard,
+  goCollection,
+  deleteCard,
 }) {
   return (
     <>
-      <PageHeader
-        eyebrow={editing ? 'UPDATE COLLECTION' : 'BUILD YOUR BINDER'}
-        title={editing ? 'Edit Card' : 'Add a Card'}
-        description={
-          editing
-            ? 'Update the details of this card.'
-            : 'Enter the details of a Pokémon card in your collection.'
-        }
-      />
+      <div className="form-page-header">
 
-      <form className="form-card" onSubmit={onSubmit}>
-        <div className="form-section">
+        <button
+          className="back-button"
+          onClick={goCollection}
+        >
+          ← Back to Collection
+        </button>
+
+        <p className="page-eyebrow">
+          {editingCard
+            ? 'Edit Card'
+            : 'Add to Your Collection'}
+        </p>
+
+        <h1>
+          {editingCard ? (
+            <>Edit <span className="pokemon-title-word">Pokémon</span> Card</>
+          ) : (
+            <>Add a <span className="pokemon-title-word">Pokémon</span> Card</>
+          )}
+        </h1>
+
+        <p>
+          {editingCard
+            ? 'Update the information for this card.'
+            : 'Enter the details of the Pokémon card you want to add.'}
+        </p>
+
+      </div>
+
+
+      <form
+        className="card-form"
+        onSubmit={submitCard}
+      >
+
+        <section className="form-section">
+
           <div className="form-section-title">
+
             <span>01</span>
+
             <div>
-              <h3>Card Information</h3>
-              <p>Basic information about your Pokémon card.</p>
+              <h2>Card Information</h2>
+
+              <p>
+                Enter the basic information about your card.
+              </p>
             </div>
+
           </div>
+
 
           <div className="form-grid">
-            <label className="field field-full">
+
+            <label className="form-field">
+
               <span>Card Name *</span>
+
               <input
-                name="name"
+                type="text"
                 value={form.name}
-                onChange={onChange}
+                onChange={(event) =>
+                  updateForm(
+                    'name',
+                    event.target.value
+                  )
+                }
                 placeholder="e.g. Pikachu"
                 required
-                maxLength="100"
               />
+
             </label>
 
-            <label className="field">
+
+            <label className="form-field">
+
               <span>Set *</span>
+
               <input
-                name="set"
+                type="text"
                 value={form.set}
-                onChange={onChange}
+                onChange={(event) =>
+                  updateForm(
+                    'set',
+                    event.target.value
+                  )
+                }
                 placeholder="e.g. Scarlet & Violet"
                 required
-                maxLength="100"
               />
+
             </label>
 
-            <label className="field">
+
+            <label className="form-field">
+
               <span>Card Number *</span>
+
               <input
-                name="cardNumber"
+                type="text"
                 value={form.cardNumber}
-                onChange={onChange}
+                onChange={(event) =>
+                  updateForm(
+                    'cardNumber',
+                    event.target.value
+                  )
+                }
                 placeholder="e.g. 025/198"
                 required
-                maxLength="30"
               />
+
             </label>
 
-            <label className="field">
-              <span>Rarity *</span>
+
+            <label className="form-field">
+
+              <span>Rarity</span>
+
               <select
-                name="rarity"
                 value={form.rarity}
-                onChange={onChange}
-                required
+                onChange={(event) =>
+                  updateForm(
+                    'rarity',
+                    event.target.value
+                  )
+                }
               >
-                <option value="">Select rarity</option>
-
-                {rarityOptions.map((rarity) => (
-                  <option key={rarity} value={rarity}>
-                    {rarity}
-                  </option>
-                ))}
+                <option>Common</option>
+                <option>Uncommon</option>
+                <option>Rare</option>
+                <option>Double Rare</option>
+                <option>Ultra Rare</option>
+                <option>Illustration Rare</option>
+                <option>Special Illustration Rare</option>
+                <option>Hyper Rare</option>
               </select>
+
             </label>
 
-            <label className="field">
-              <span>Condition *</span>
+
+            <label className="form-field">
+
+              <span>Condition</span>
+
               <select
-                name="condition"
                 value={form.condition}
-                onChange={onChange}
-                required
+                onChange={(event) =>
+                  updateForm(
+                    'condition',
+                    event.target.value
+                  )
+                }
               >
-                {conditionOptions.map((condition) => (
-                  <option key={condition} value={condition}>
-                    {condition}
-                  </option>
-                ))}
+                <option>Near Mint</option>
+                <option>Excellent</option>
+                <option>Good</option>
+                <option>Played</option>
+                <option>Damaged</option>
               </select>
+
             </label>
 
-            <label className="field">
-              <span>Quantity *</span>
+
+            <label className="form-field">
+
+              <span>Quantity</span>
+
               <input
                 type="number"
-                name="quantity"
-                value={form.quantity}
-                onChange={onChange}
                 min="1"
-                max="999"
-                required
+                value={form.quantity}
+                onChange={(event) =>
+                  updateForm(
+                    'quantity',
+                    event.target.value
+                  )
+                }
               />
+
             </label>
 
-            <label className="field field-full">
-              <span>Image URL</span>
-              <input
-                name="image"
-                value={form.image}
-                onChange={onChange}
-                placeholder="https://..."
-                maxLength="1000"
-              />
-              <small>
-                Optional. Leave blank if you do not have an image URL.
-              </small>
-            </label>
           </div>
-        </div>
+
+        </section>
+
+
+        <section className="form-section">
+
+          <div className="form-section-title">
+
+            <span>02</span>
+
+            <div>
+              <h2>Card Image</h2>
+
+              <p>
+                Add an image URL for your card.
+              </p>
+            </div>
+
+          </div>
+
+
+          <label className="form-field full-field">
+
+            <span>Image URL</span>
+
+            <input
+              type="url"
+              value={form.image}
+              onChange={(event) =>
+                updateForm(
+                  'image',
+                  event.target.value
+                )
+              }
+              placeholder="https://example.com/card-image.jpg"
+            />
+
+          </label>
+
+        </section>
+
 
         <div className="form-actions">
+
           <button
             type="button"
-            className="secondary-button"
-            onClick={onCancel}
+            className="cancel-button"
+            onClick={goCollection}
             disabled={saving}
           >
             Cancel
           </button>
 
-          <button type="submit" className="primary-button" disabled={saving}>
+          {editingCard && deleteCard && (
+            <button
+              type="button"
+              className="delete-button"
+              onClick={() =>
+                deleteCard(editingCard)
+              }
+              disabled={saving}
+            >
+              Delete Card
+            </button>
+          )}
+
+          <button
+            type="submit"
+            className="primary-button"
+            disabled={saving}
+          >
+            <span className="button-icon">
+              {saving ? '…' : '+'}
+            </span>
+
             {saving
               ? 'Saving...'
-              : editing
+              : editingCard
                 ? 'Save Changes'
                 : 'Add Card'}
           </button>
+
         </div>
+
       </form>
     </>
   )
 }
 
-function CardDetailsPage({ card, onBack, onEdit, onDelete }) {
+
+/* =========================================================
+   CARD DETAILS PAGE
+========================================================= */
+
+function CardDetailsPage({
+  card,
+  goCollection,
+  startEdit,
+  deleteCard,
+}) {
   return (
     <>
-      <div className="details-topbar">
-        <button className="back-button" onClick={onBack}>
-          ← Back to Collection
-        </button>
-      </div>
+      <button
+        className="back-button"
+        onClick={goCollection}
+      >
+        ← Back to Collection
+      </button>
 
-      <section className="details-card">
+      <section className="details-page">
+
         <div className="details-image">
+
           {card.image ? (
-            <img src={card.image} alt={card.name} />
+            <img
+              src={card.image}
+              alt={card.name}
+              onError={(event) => {
+                event.currentTarget.style.display = 'none'
+              }}
+            />
           ) : (
-            <div className="details-placeholder">⚡</div>
+            <div className="details-image-placeholder">
+              ▣
+            </div>
           )}
+
         </div>
 
-        <div className="details-content">
-          <p className="eyebrow">CARD DETAILS</p>
 
-          <h2>{card.name}</h2>
+        <div className="details-content">
+
+          <p className="details-eyebrow">CARD DETAILS</p>
+
+          <h1 className="details-card-name">
+            <span>{card.name || 'Unnamed Card'}</span>
+          </h1>
 
           <p className="details-set">
-            {card.set || 'No set specified'}
+            {card.set || 'Unknown Set'}
           </p>
 
-          <div className="details-badges">
-            {card.rarity && (
-              <span className="detail-badge">{card.rarity}</span>
-            )}
+          <span className="details-rarity">
+            {card.rarity || 'Unknown Rarity'}
+          </span>
 
-            <span className="detail-badge">
-              ×{Number(card.quantity || 1)}
-            </span>
+
+          <div className="details-table">
+
+            <div className="detail-row">
+              <span>Card Number</span>
+              <strong>
+                {card.cardNumber || '—'}
+              </strong>
+            </div>
+
+            <div className="detail-row">
+              <span>Condition</span>
+              <strong>
+                {card.condition || '—'}
+              </strong>
+            </div>
+
+            <div className="detail-row">
+              <span>Quantity</span>
+              <strong>
+                {card.quantity ?? 0}
+              </strong>
+            </div>
+
+            <div className="detail-row">
+              <span>Rarity</span>
+              <strong>
+                {card.rarity || '—'}
+              </strong>
+            </div>
+
           </div>
 
-          <div className="details-list">
-            <DetailRow
-              label="Card Number"
-              value={getCardNumber(card) || '—'}
-            />
-
-            <DetailRow
-              label="Condition"
-              value={card.condition || '—'}
-            />
-
-            <DetailRow
-              label="Quantity"
-              value={String(Number(card.quantity || 1))}
-            />
-
-            <DetailRow
-              label="Set"
-              value={card.set || '—'}
-            />
-
-            <DetailRow
-              label="Rarity"
-              value={card.rarity || '—'}
-            />
-          </div>
 
           <div className="details-actions">
-            <button className="primary-button" onClick={onEdit}>
+
+            <button
+              className="outline-button"
+              onClick={() =>
+                startEdit(card)
+              }
+            >
               Edit Card
             </button>
 
-            <button className="danger-button" onClick={onDelete}>
+            <button
+              className="delete-button"
+              onClick={() =>
+                deleteCard(card)
+              }
+            >
               Delete
             </button>
+
           </div>
+
         </div>
+
       </section>
     </>
   )
 }
 
-function DetailRow({ label, value }) {
+
+/* =========================================================
+   CARD TILE
+========================================================= */
+
+function CardTile({ card, onClick }) {
   return (
-    <div className="detail-row">
-      <span>{label}</span>
-      <strong>{value}</strong>
+    <button
+      className="card-tile"
+      onClick={onClick}
+    >
+
+      <div className="card-image-wrapper">
+
+        {card.image ? (
+          <img
+            src={card.image}
+            alt={card.name}
+            className="card-image"
+            onError={(event) => {
+              event.currentTarget.style.display = 'none'
+            }}
+          />
+        ) : (
+          <div className="card-image-placeholder">
+            ▣
+          </div>
+        )}
+
+      </div>
+
+
+      <div className="card-tile-info">
+
+        <h3>
+          {card.name || 'Unnamed Card'}
+        </h3>
+
+        <p>
+          {card.set || 'Unknown Set'}
+          {card.cardNumber
+            ? ` • ${card.cardNumber}`
+            : ''}
+        </p>
+
+        <div className="card-tile-meta">
+
+          <span>
+            ×{card.quantity ?? 0}
+          </span>
+
+          <span>
+            {card.rarity || 'Common'}
+          </span>
+
+        </div>
+
+      </div>
+
+    </button>
+  )
+}
+
+
+/* =========================================================
+   STAT CARD
+========================================================= */
+
+function StatCard({
+  className,
+  icon,
+  label,
+  value,
+}) {
+  return (
+    <div className={`stat-card ${className}`}>
+
+      <div className="stat-icon">
+        {icon}
+      </div>
+
+      <div className="stat-content">
+
+        <p>
+          {label}
+        </p>
+
+        <strong>
+          {value}
+        </strong>
+
+      </div>
+
+    </div>
+  )
+}
+
+
+/* =========================================================
+   FEATURE CARD
+========================================================= */
+
+function FeatureCard({
+  className,
+  icon,
+  title,
+  text,
+}) {
+  return (
+    <div className={`feature-card ${className}`}>
+
+      <div className="feature-icon">
+        {icon}
+      </div>
+
+      <div>
+
+        <h3>
+          {title}
+        </h3>
+
+        <p>
+          {text}
+        </p>
+
+      </div>
+
     </div>
   )
 }

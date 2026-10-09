@@ -1,27 +1,44 @@
-# Weekly reports
+## Week of 2026-09-21 to 2026-09-24
 
-Five minutes a week. Add a new section at the top; never edit an old one.
+**Done**
+- Reviewed and improved the PostgreSQL database connection setup.
+- Added an error message for a missing `DATABASE_URL`.
+- Checked `.gitignore` to help prevent sensitive files from being committed.
+- Reviewed environment variables and deployment configuration.
 
-The value is entirely in writing them **while it is happening**. What took four
-hours and why is invisible a month later, and it is exactly what your journal
-needs.
+**Stuck**
+- Needed to verify the database connection and environment variables for deployment.
+- The setup still needed testing in the deployed environment.
 
----
+**Hours**
+- [Enter estimated hours.]
 
-## Week of YYYY-MM-DD
-
-**Done.** What actually works now, in the deployed app rather than on your laptop.
-
-**Stuck.** What is not working, and the most specific description you can give.
-"CORS" is not specific. "The preflight OPTIONS returns 404 because my router is
-mounted above cors" is.
-
-**Hours.** Roughly. You will need this to estimate anything, ever.
-
-**Next.** One or two things, not a wish list.
+**Next**
+- Test the PostgreSQL connection after deployment.
+- Verify environment variables and test the main application features.
 
 ---
 
-## Week of YYYY-MM-DD
+## Week of 2026-09-23
 
-...
+**Done**
+- Built the main UI for Home, Add Card, Collection, and Card Details.
+- Added the Poké Ball logo and improved the interface styling.
+- Connected the frontend to Express and PostgreSQL.
+- Created the card database schema and `/api/cards` endpoints.
+- Added Basic Authentication and server-side validation.
+- Started PostgreSQL and tested the API.
+
+**Stuck**
+- Encountered PostgreSQL connection errors during setup.
+- Replaced sample cards with database integration.
+
+**Hours**
+- [Enter estimated hours.]
+
+**Next**
+- Test adding, editing, and deleting cards.
+- Finish testing frontend functions with the database.
+- Complete security checks and documentation.
+
+---

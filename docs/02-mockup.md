@@ -1,24 +1,25 @@
-# Mockup
+# PokéBinder Mockup
 
-Your prelim wireframes are finished and are not being redone. The mockup is what
-the app will actually look like: the wireframes painted in, with your real
-colours, type, spacing and content.
+The mockup images show the planned design of PokéBinder on desktop and mobile.
 
-**This is submitted as images or a PDF.** A written description of a picture
-scores in the lowest band, because the thing being asked for is the picture.
+## Mockup Screens
 
-Put the exported images in `assets/` and link them here, so the repository
-carries them too.
+### Desktop
 
-## What it should show
+![Home Screen](../assets/webhome.png)
 
-- Every screen in your revised proposal, and no screens that are not in it
-- Real content, not "Lorem ipsum" and not "Title here"
-- The empty state of at least one screen, because that is the one people forget
-- What it looks like on a phone
+![Collection Screen](../assets/webcollection.png)
 
-## Honest note
+![Add Card Screen](../assets/webadd.png)
 
-Anything in the mockup that is not in the built app by the end needs a sentence
-in your journal explaining what happened. That is a normal part of building
-something, and saying so reads far better than quietly shipping less.
+### Mobile
+
+![Home Screen](../assets/mobilehome.png)
+
+![Collection Screen](../assets/mobilecollection.png)
+
+![Add Card Screen](../assets/mobileadd.png)
+
+## Implementation Notes
+
+The mockups show the intended interface. Any differences between the mockups and the final application will be documented in the project journal.

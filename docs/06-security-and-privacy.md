@@ -1,69 +1,34 @@
-# Security and privacy checklist
+# Security and Privacy Checklist
 
-Work through this **before your first push**, and again before you submit. It is
-short, none of it is exotic, and a grader can check most of it in two minutes.
+## Before the First Push
 
-Your repository is public, in your own account, and permanent. That is the point
-of it, and it is also why this file exists.
+- [x] `.gitignore` ignores `.env` and other `.env.*` files, while allowing `.env.example` files.
+- [x] No actual `.env`, `.pem`, or `id_rsa` files appear in the tracked file list; only the root, client, and server `.env.example` files are tracked.
+- [x] All three `.env.example` files use placeholders and example URLs, not working credentials.
+- [x] The reported personal email was removed from current tracked files and rewritten out of all five commits on `main`. A targeted check found no matching email or private-key marker in reachable history. This does not replace a final review for other personal data or credentials.
 
-## Before the first push
+## The Application
 
-- [ ] `.gitignore` includes `.env`, and `git check-ignore -v .env` confirms it
-- [ ] `git ls-files | grep -iE '\.env$|\.pem$|id_rsa'` prints nothing
-- [ ] `.env.example` is committed, with **placeholder** values only
-- [ ] No connection string, key or password anywhere in the repository,
-      including in a screenshot
-- [ ] No `student.json`, and no name, student number or email of yours or anyone
-      else's
-
-Deleting a file later does **not** remove it from the history. If you commit a
-credential, **rotate it first**, at the service, and clean up the history second.
-The rotation is the fix; the cleanup is hygiene.
-
-## The application
-
-- [ ] Every SQL query is parameterised. Values go in the array, never into the
-      string. This is one line of defence you already know how to do
-- [ ] Input is validated **on the server**, not only in React. Length limits on
-      every text field
-- [ ] `cors({ origin: allowedOrigins })` names your origins. Not `cors()` with no
-      options, which allows every site on the internet
-- [ ] `NODE_ENV=production` on the host, and no stack trace in any response body
-- [ ] `helmet` installed, which is one line for several real protections
-- [ ] Anything that costs money or accepts a password is rate limited
-- [ ] Passwords, if you have accounts, are hashed with bcrypt and never logged
-- [ ] Every route that touches somebody's data has the ownership check **in the
-      query**, as `AND user_id = $2`, not as an `if` above it
-- [ ] `npm audit` run once, and the easy fixes taken
-
-```bash
-npm install helmet
-```
-
-```js
-import helmet from 'helmet'
-app.use(helmet())
-```
+- [x] SQL queries use parameterized values; card values are passed separately from SQL in `server/cardsRepo.js`.
+- [x] Server-side validation limits every text field in `server/server.js`, including image URLs (2,048 characters); JSON request bodies are capped at 100 KB.
+- [x] CORS uses the configured `CORS_ORIGINS` allowlist in `server/server.js`.
+- [x] The API's error handler returns a generic 500 response rather than a stack trace. The supplied Compose configuration sets `NODE_ENV=production` and enables Basic Authentication; keep credentials in ignored `.env` files or deployment settings.
+- [x] Helmet is installed and enabled with `import helmet from 'helmet'` and `app.use(helmet())` in `server/server.js`.
+- [x] `express-rate-limit` limits `/api` to 100 requests per IP per 15 minutes and returns 429 when the limit is exceeded. A live-server check confirmed this behavior.
+- [ ] The supplied Compose configuration connects as PostgreSQL's `postgres` superuser. Use a least-privilege application role before exposing the API or database publicly. Docker is unavailable in this environment, so no role migration was applied or tested.
+- [x] Password hashing is N/A: this app has no user accounts or stored per-user passwords; the optional production gate is shared Basic Authentication.
+- [x] Ownership checks are N/A: the database schema and API are for one collection, with no multi-user support.
+- [x] `npm audit --prefix client` and `npm audit --prefix server` each reported zero vulnerabilities on 2026-10-09.
 
 ## Privacy
 
-The half that matters more, because it is about other people.
+- [ ] Confirm that no classmates' personal information appears anywhere in the repository or in any final recording. The checked-in app screenshots reviewed contain no people; no demo video is linked in `docs/05-demo-video.md` yet.
+- [x] The stale Haunted Sightings fixture in `client/src/api/seed.json` has been cleared; it no longer contains unrelated sample reports.
+- [ ] Confirm that real tester data has been removed from the database, browser storage, screenshots, and any recording before submission. Docker is unavailable here, and the target browser storage was not inspected, so those data stores remain unverified.
+- [x] N/A: the card form requests card details, not account or identity information. A `DemoNotice` component contains a storage explanation, but it is not rendered by the current `App.jsx`; do not count it as an on-screen disclosure.
+- [x] All six app screenshots in `assets/` were reviewed; they show the interface and card artwork, not photographs of people. Review any future footage before publishing a demo video.
+- [ ] Verify the ownership, license, or attribution requirements for the card artwork, logo, fonts, and other bundled assets before public distribution.
 
-- [ ] **No real classmates' names, numbers, emails or photos**, anywhere. Not in
-      seed data, not in screenshots, not in the demo video. Consent for a course
-      project does not cover the next ten years of a public repository
-- [ ] Seed data is invented. Yours will be read
-- [ ] If real people tested your app, even three friends, their data is deleted
-      before you submit
-- [ ] If your app collects anything about anyone, the app says what it collects
-- [ ] Any face in a screenshot is stock, generated, or yours
+## Journal Note
 
-If your project handles personal information about real people, you are inside
-the Philippine Data Privacy Act. Collect the minimum, say what you collect, and
-do not collect anything you cannot justify.
-
-## What to write in your journal
-
-One short paragraph: the riskiest thing about your project from this list, what
-you did about it, and what you knowingly accepted. A student who can name the
-tradeoff they made scores better than one who claims there was none.
+The main risks are leaking self-hosting credentials and exposing the API or database. Environment files are ignored, example files contain placeholders, SQL values are parameterized, CORS is allowlisted, Helmet is enabled, API rate limiting and image length validation are in place, and both package audits report zero vulnerabilities. The public site uses browser-only demo mode; the supplied Compose setup binds the API to localhost and keeps PostgreSQL off published host ports. Production Basic Authentication is enabled by the Compose configuration. The reported email was rewritten out of reachable `main` history; finish the full personal-data and credential review, verify local/tester data, and confirm asset licensing before making the repository public. Review any future demo recording before sharing it.

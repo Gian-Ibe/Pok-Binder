@@ -1,18 +1,19 @@
-# Proposal
+# PokéBinder Proposal
 
-The submitted version is your Canvas answer for m8a1. This copy lives in the
-repository so the plan and the code sit next to each other.
+## Core Features
+PokéBinder is a web application for managing a personal Pokémon card collection. Users can add, view, edit, and delete cards, search and filter their collection, and view collection statistics.
 
-Paste or rewrite the proposal here, and **keep it updated** as things change. A
-proposal that still describes a feature you cut in October is worse than no
-proposal.
+## Hosting
+- **Frontend:** GitHub Pages
+- **Backend:** Express.js, running locally
+- **Database:** PostgreSQL, running locally
 
-## The parts most likely to drift
+The local application saves cards to PostgreSQL, while the public website uses demo mode.
 
-- **Core features.** Move anything you cut to stretch goals rather than deleting
-  it. The record of what you cut, and why, is worth marks.
-- **Where each piece is hosted.** Client, API, database, and the free tier's
-  catch for each. If you change host, note the date and the reason.
-- **The date demo mode goes off.** If that date has passed and it is still on,
-  that is the most important line in this file.
-- **Risks.** Which have shrunk, which grew, which turned out to be nothing.
+## Demo Mode
+Demo mode is currently enabled on the public website through `VITE_USE_MOCK_API=true`. No date has been set for disabling it.
+
+## Risks
+- The public website cannot connect to the local backend.
+- The public website uses mock data instead of saving cards to PostgreSQL.
+- Deploying the backend and database online may be considered in the future.

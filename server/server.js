@@ -1,11 +1,14 @@
+import helmet from 'helmet';
 import express from 'express'
 import cors from 'cors'
+import { rateLimit } from 'express-rate-limit'
 import { pool } from './db/pool.js'
 import * as cards from './cardsRepo.js'
 
 const app = express()
+app.use(helmet());
 
-// Basic Authentication protects the API.
+// Basic Authentication protects the API in production.
 function basicAuth(request, response, next) {
   const configuredUsername = process.env.BASIC_AUTH_USERNAME
   const configuredPassword = process.env.BASIC_AUTH_PASSWORD
@@ -24,6 +27,7 @@ function basicAuth(request, response, next) {
   }
 
   const encodedCredentials = authorization.slice('Basic '.length)
+
   const decodedCredentials = Buffer.from(
     encodedCredentials,
     'base64'
@@ -57,8 +61,22 @@ const allowedOrigins = (process.env.CORS_ORIGINS || 'http://localhost:5173')
   .filter(Boolean)
 
 app.use(cors({ origin: allowedOrigins }))
+
+app.use('/api', rateLimit({
+  windowMs: 15 * 60 * 1000,
+  limit: 100,
+  standardHeaders: true,
+  legacyHeaders: false,
+  message: { error: 'Too many requests' }
+}))
+
 app.use(express.json({ limit: '100kb' }))
-app.use(basicAuth)
+
+// Require Basic Authentication only in production.
+// Local development does not require a login screen.
+if (process.env.NODE_ENV === 'production') {
+  app.use(basicAuth)
+}
 
 // Health check
 app.get('/healthz', (request, response) => {
@@ -72,7 +90,10 @@ app.get('/readyz', async (request, response) => {
     response.json({ ok: true, db: 'up' })
   } catch (error) {
     console.error('readyz failed:', error.message)
-    response.status(503).json({ ok: false, db: 'down' })
+    response.status(503).json({
+      ok: false,
+      db: 'down'
+    })
   }
 })
 
@@ -80,36 +101,59 @@ app.get('/readyz', async (request, response) => {
 function validate(body) {
   const errors = []
 
-  const name = typeof body.name === 'string' ? body.name.trim() : ''
-  const set = typeof body.set === 'string' ? body.set.trim() : ''
+  const name =
+    typeof body.name === 'string'
+      ? body.name.trim()
+      : ''
+
+  const set =
+    typeof body.set === 'string'
+      ? body.set.trim()
+      : ''
+
   const cardNumber =
     typeof body.cardNumber === 'string'
       ? body.cardNumber.trim()
       : ''
+
   const rarity =
     typeof body.rarity === 'string'
       ? body.rarity.trim()
       : ''
+
   const condition =
     typeof body.condition === 'string'
       ? body.condition.trim()
       : ''
+
   const quantity = Number(body.quantity)
+
   const image =
     typeof body.image === 'string'
       ? body.image.trim()
       : ''
 
-  if (!name) errors.push('name is required')
-  if (!set) errors.push('set is required')
-  if (!cardNumber) errors.push('cardNumber is required')
-  if (!rarity) errors.push('rarity is required')
-  if (!condition) errors.push('condition is required')
+  if (!name) {
+    errors.push('name is required')
+  }
 
-  if (
-    !Number.isInteger(quantity) ||
-    quantity < 1
-  ) {
+  if (!set) {
+    errors.push('set is required')
+  }
+
+  if (!cardNumber) {
+    errors.push('cardNumber is required')
+  }
+
+  if (!rarity) {
+    errors.push('rarity is required')
+  }
+
+  if (!condition) {
+    errors.push('condition is required')
+  }
+
+  if (!Number.isInteger(quantity) || quantity < 1) {
     errors.push('quantity must be a whole number greater than 0')
   }
 
@@ -131,6 +175,10 @@ function validate(body) {
 
   if (condition.length > 80) {
     errors.push('condition must be 80 characters or fewer')
+  }
+
+  if (image.length > 2048) {
+    errors.push('image must be 2048 characters or fewer')
   }
 
   return {
@@ -159,10 +207,15 @@ app.get('/api/cards', async (request, response, next) => {
 // Get one card
 app.get('/api/cards/:id', async (request, response, next) => {
   try {
-    const row = await cards.getById(pool, request.params.id)
+    const row = await cards.getById(
+      pool,
+      request.params.id
+    )
 
     if (!row) {
-      return response.status(404).json({ error: 'Not found' })
+      return response.status(404).json({
+        error: 'Not found'
+      })
     }
 
     response.json(row)
@@ -173,7 +226,9 @@ app.get('/api/cards/:id', async (request, response, next) => {
 
 // Add a card
 app.post('/api/cards', async (request, response, next) => {
-  const { errors, value } = validate(request.body ?? {})
+  const { errors, value } = validate(
+    request.body ?? {}
+  )
 
   if (errors.length > 0) {
     return response.status(400).json({
@@ -192,7 +247,9 @@ app.post('/api/cards', async (request, response, next) => {
 
 // Update a card
 app.put('/api/cards/:id', async (request, response, next) => {
-  const { errors, value } = validate(request.body ?? {})
+  const { errors, value } = validate(
+    request.body ?? {}
+  )
 
   if (errors.length > 0) {
     return response.status(400).json({
@@ -249,6 +306,7 @@ app.use((request, response) => {
 // Safe server error
 app.use((error, request, response, next) => {
   console.error(error)
+
   response.status(500).json({
     error: 'Something went wrong on the server'
   })
@@ -258,6 +316,11 @@ app.use((error, request, response, next) => {
 const port = process.env.PORT || 3000
 
 app.listen(port, () => {
-  console.log(`API listening on http://localhost:${port}`)
-  console.log(`CORS allows: ${allowedOrigins.join(', ')}`)
+  console.log(
+    `API listening on http://localhost:${port}`
+  )
+
+  console.log(
+    `CORS allows: ${allowedOrigins.join(', ')}`
+  )
 })

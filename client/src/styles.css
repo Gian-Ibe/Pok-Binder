@@ -1,50 +1,43 @@
+@import url('https://fonts.googleapis.com/css2?family=Bowlby+One+SC&family=Nunito:wght@400;500;600;700;800;900&display=swap');
+
 /* =========================================================
-   POKÉBINDER UI
+   RESET
 ========================================================= */
 
 * {
   box-sizing: border-box;
 }
 
-:root {
-  font-family:
-    Inter,
-    ui-sans-serif,
-    system-ui,
-    -apple-system,
-    BlinkMacSystemFont,
-    "Segoe UI",
-    sans-serif;
-
-  color: #102d50;
-  background: #eef7ff;
-
-  font-synthesis: none;
-  text-rendering: optimizeLegibility;
+html,
+body,
+#root {
+  margin: 0;
+  min-height: 100%;
 }
 
 body {
   margin: 0;
-  min-width: 320px;
-  min-height: 100vh;
 
   background:
-    radial-gradient(
-      circle at 80% 0%,
-      rgba(74, 182, 255, 0.28),
-      transparent 30%
-    ),
     linear-gradient(
-      180deg,
-      #dff3ff 0%,
-      #f7fbff 48%,
-      #fffdf3 100%
+      135deg,
+      #eaf7ff 0%,
+      #f7fbff 50%,
+      #fffdf4 100%
     );
+
+  color: #12385e;
+
+  font-family:
+    'Nunito',
+    Arial,
+    sans-serif;
 }
 
 button,
 input,
-select {
+select,
+textarea {
   font: inherit;
 }
 
@@ -59,7 +52,6 @@ button {
 
 .app {
   min-height: 100vh;
-  display: flex;
 }
 
 
@@ -70,135 +62,89 @@ button {
 .sidebar {
   position: fixed;
 
-  z-index: 50;
-
   top: 0;
   left: 0;
+  bottom: 0;
 
-  width: 190px;
-  height: 100vh;
+  width: 320px;
 
-  overflow: hidden;
+  display: flex;
+  flex-direction: column;
 
-  padding: 20px 12px;
+  padding: 22px 14px;
+
+  background:
+    linear-gradient(
+      180deg,
+      #063b6d 0%,
+      #052f57 100%
+    );
 
   color: white;
 
-  background:
-    radial-gradient(
-      circle at 20% 75%,
-      rgba(48, 126, 205, 0.35),
-      transparent 28%
-    ),
-    radial-gradient(
-      circle at 100% 80%,
-      rgba(255, 207, 50, 0.16),
-      transparent 25%
-    ),
-    linear-gradient(
-      180deg,
-      #092c51 0%,
-      #06294a 55%,
-      #0b426d 100%
-    );
+  z-index: 20;
 
   box-shadow:
-    8px 0 25px rgba(4, 28, 50, 0.14);
-}
-
-.sidebar::before,
-.sidebar::after {
-  content: "";
-
-  position: absolute;
-
-  border-radius: 50%;
-
-  pointer-events: none;
-}
-
-.sidebar::before {
-  width: 120px;
-  height: 120px;
-
-  right: -55px;
-  bottom: 135px;
-
-  border: 20px solid rgba(255, 255, 255, 0.08);
-}
-
-.sidebar::after {
-  width: 80px;
-  height: 80px;
-
-  left: -45px;
-  bottom: 190px;
-
-  background: rgba(50, 132, 210, 0.18);
+    5px 0 22px
+    rgba(5, 38, 69, 0.20);
 }
 
 
 /* =========================================================
-   BRAND
+   SIDEBAR BRAND
 ========================================================= */
 
-.brand {
-  position: relative;
-  z-index: 2;
+.sidebar-brand {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 
   text-align: center;
 
-  margin-bottom: 30px;
+  margin-bottom: 34px;
 }
 
-.brand-pokeballs {
-  display: flex;
+.sidebar-logo {
+  width: 58px;
+  height: 58px;
 
-  justify-content: center;
-
-  gap: 9px;
+  object-fit: contain;
 
   margin-bottom: 7px;
 }
 
-.brand-pokeballs img {
-  width: 34px;
-  height: 34px;
-
-  object-fit: contain;
-
-  filter:
-    drop-shadow(
-      0 3px 4px rgba(0, 0, 0, 0.3)
-    );
-}
-
-.brand h1 {
+.brand-name {
   margin: 0;
+
+  color: #ffd52f;
+
+  font-family:
+    'Bowlby One SC',
+    Impact,
+    sans-serif;
 
   font-size: 25px;
 
   line-height: 1;
 
-  font-weight: 900;
-
-  letter-spacing: -1.2px;
+  letter-spacing: -0.5px;
 
   text-shadow:
-    0 2px 4px rgba(0, 0, 0, 0.25);
+    2px 2px 0 #061e39;
 }
 
-.brand h1 span {
-  color: #ffd13b;
-}
-
-.brand p {
-  margin: 8px 0 0;
+.brand-subtitle {
+  margin-top: 8px;
 
   color:
-    rgba(255, 255, 255, 0.84);
+    rgba(255, 255, 255, 0.82);
 
-  font-size: 10px;
+  font-size: 8px;
+  font-weight: 900;
+
+  letter-spacing: 0.06em;
+
+  line-height: 1.4;
 }
 
 
@@ -207,383 +153,606 @@ button {
 ========================================================= */
 
 .sidebar-nav {
-  position: relative;
-  z-index: 5;
-
   display: flex;
-
   flex-direction: column;
 
-  gap: 7px;
+  gap: 8px;
 }
 
-.sidebar-nav button {
+.nav-item {
   width: 100%;
 
-  display: flex;
+  min-height: 50px;
 
+  display: flex;
   align-items: center;
 
-  gap: 12px;
+  gap: 13px;
 
-  padding: 11px 13px;
+  padding: 0 16px;
 
   border: 0;
-
-  border-radius: 10px;
+  border-radius: 12px;
 
   background: transparent;
 
-  color: white;
+  color:
+    rgba(255, 255, 255, 0.95);
 
-  font-size: 13px;
-
-  font-weight: 500;
+  font-size: 14px;
+  font-weight: 800;
 
   text-align: left;
 
   transition:
-    transform 0.18s ease,
-    background 0.18s ease,
-    box-shadow 0.18s ease;
+    background 0.15s ease,
+    color 0.15s ease,
+    transform 0.15s ease;
 }
 
-.sidebar-nav button:hover {
+.nav-item:hover {
   background:
-    rgba(255, 255, 255, 0.1);
+    rgba(255, 255, 255, 0.10);
 
-  transform:
-    translateX(2px);
+  transform: translateX(2px);
 }
 
-.sidebar-nav button.active {
-  color: #102d50;
+.nav-item.active {
+  background: #ffd83d;
 
-  background:
-    linear-gradient(
-      135deg,
-      #ffe46b,
-      #ffd23c
-    );
-
-  font-weight: 800;
+  color: #082f55;
 
   box-shadow:
-    0 5px 12px
-      rgba(0, 0, 0, 0.18),
-    inset 0 1px 0
-      rgba(255, 255, 255, 0.55);
+    0 6px 15px
+    rgba(255, 216, 61, 0.20);
 }
 
-.sidebar-nav button span {
+.nav-icon {
   width: 22px;
 
   display: inline-flex;
-
-  align-items: center;
-
   justify-content: center;
 
-  font-size: 18px;
+  font-size: 19px;
+
+  line-height: 1;
 }
 
 
 /* =========================================================
-   SIDEBAR ART
+   SIDEBAR BOTTOM DECORATION
 ========================================================= */
 
-.sidebar-art {
+.sidebar-bottom {
+  flex: 1;
+
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+
+  padding-bottom: 5px;
+}
+
+.sidebar-mini-ball {
+  position: relative;
+
+  width: 125px;
+  height: 125px;
+
+  opacity: 0.075;
+}
+
+.sidebar-mini-ball::before {
+  content: '';
+
+  position: absolute;
+
+  inset: 0;
+
+  border: 10px solid white;
+
+  border-radius: 50%;
+}
+
+.sidebar-mini-ball::after {
+  content: '';
+
   position: absolute;
 
   left: 0;
-  bottom: 0;
+  right: 0;
+  top: 53px;
 
-  width: 100%;
-  height: 260px;
+  height: 10px;
 
-  overflow: hidden;
-
-  pointer-events: none;
+  background: white;
 }
 
-.sidebar-art::before {
-  content: "";
-
+.sidebar-mini-ball span {
   position: absolute;
 
-  left: -30px;
-  bottom: -40px;
+  left: 42px;
+  top: 42px;
 
-  width: 170px;
-  height: 170px;
+  width: 41px;
+  height: 41px;
+
+  border: 8px solid white;
 
   border-radius: 50%;
 
-  background:
-    radial-gradient(
-      circle,
-      transparent 0 28%,
-      rgba(255,255,255,.15)
-        29% 42%,
-      transparent 43%
-    );
-}
+  background: #07345d;
 
-.sidebar-art::after {
-  content: "⚡";
-
-  position: absolute;
-
-  left: 30px;
-  bottom: 22px;
-
-  color: #ffd42f;
-
-  font-size: 90px;
-
-  transform:
-    rotate(-7deg);
-
-  filter:
-    drop-shadow(
-      0 5px 3px rgba(0,0,0,.18)
-    );
-}
-
-.pokeball-decoration {
-  position: absolute;
-
-  right: -32px;
-  bottom: 85px;
-
-  width: 110px;
-  height: 110px;
-
-  border-radius: 50%;
-
-  background:
-    linear-gradient(
-      #d94a59 0 46%,
-      rgba(255,255,255,.22)
-        46% 54%,
-      #345a7d 54%
-    );
-
-  opacity: 0.42;
-
-  border:
-    13px solid
-    rgba(255,255,255,.15);
+  z-index: 2;
 }
 
 
 /* =========================================================
-   MAIN
+   MAIN CONTENT
 ========================================================= */
 
 .main-content {
-  width:
-    calc(100% - 190px);
-
   min-height: 100vh;
 
-  margin-left: 190px;
+  margin-left: 320px;
 
-  padding:
-    18px
-    25px
-    45px;
+  padding: 25px 30px 50px;
+}
 
-  background:
-    radial-gradient(
-      circle at 80% 3%,
-      rgba(66, 184, 255, 0.2),
-      transparent 28%
-    ),
-    radial-gradient(
-      circle at 55% 90%,
-      rgba(255, 215, 76, 0.16),
-      transparent 25%
-    ),
-    linear-gradient(
-      180deg,
-      #e0f3ff 0,
-      #f7fbff 360px,
-      #fffdf4 100%
-    );
+.page-content {
+  width: 100%;
+
+  max-width: 1320px;
+
+  margin: 0 auto;
 }
 
 
 /* =========================================================
-   HEADER
+   ERROR NOTICE
 ========================================================= */
 
-.page-header {
-  position: relative;
-
-  min-height: 105px;
-
-  display: flex;
-
-  align-items: center;
-
-  gap: 16px;
-
+.error-notice {
   margin-bottom: 15px;
 
-  padding:
-    19px
-    24px;
+  padding: 12px 16px;
 
-  overflow: hidden;
+  display: flex;
+  align-items: center;
 
-  border:
-    1px solid
-    rgba(135, 198, 232, 0.7);
+  gap: 10px;
 
-  border-radius: 17px;
+  border: 1px solid #ffb8bd;
+  border-radius: 10px;
 
-  background:
-    radial-gradient(
-      circle at 90% 20%,
-      rgba(58, 165, 242, 0.24),
-      transparent 24%
-    ),
-    linear-gradient(
-      135deg,
-      rgba(255,255,255,.98),
-      rgba(224,245,255,.88)
-    );
+  background: #fff0f1;
 
-  box-shadow:
-    0 8px 22px
-      rgba(31, 86, 125, 0.1),
-    inset 0 1px 0
-      rgba(255,255,255,.9);
+  color: #a92732;
+
+  font-size: 13px;
+  font-weight: 700;
 }
 
-.page-header::after {
-  content: "";
-
-  position: absolute;
-
-  right: -30px;
-  bottom: -55px;
-
-  width: 170px;
-  height: 170px;
-
-  border-radius: 50%;
-
-  background:
-    radial-gradient(
-      circle,
-      rgba(255, 211, 57, .22)
-        0 30%,
-      transparent
-        31% 48%,
-      rgba(255, 211, 57, .12)
-        49% 58%,
-      transparent 59%
-    );
-}
-
-.page-header-icon {
-  position: relative;
-
-  z-index: 2;
-
-  width: 65px;
-  height: 65px;
-
-  flex-shrink: 0;
+.error-notice span {
+  width: 23px;
+  height: 23px;
 
   display: grid;
-
   place-items: center;
 
   border-radius: 50%;
 
-  background: white;
+  background: #e63c48;
 
-  box-shadow:
-    0 5px 12px
-      rgba(26, 73, 110, 0.16);
-}
-
-.page-header-icon img {
-  width: 100%;
-  height: 100%;
-
-  object-fit: contain;
-
-  filter:
-    drop-shadow(
-      0 3px 3px
-      rgba(0,0,0,.14)
-    );
-}
-
-.page-header-text {
-  position: relative;
-
-  z-index: 2;
-
-  flex: 1;
-}
-
-.page-header-text h2 {
-  margin: 0;
-
-  color: #092d55;
-
-  font-size: 30px;
-
-  line-height: 1.05;
+  color: white;
 
   font-weight: 900;
-
-  letter-spacing: -0.8px;
 }
 
-.page-header-text p {
-  margin: 7px 0 0;
 
-  color: #365a7e;
+/* =========================================================
+   HOME HERO
+========================================================= */
 
-  font-size: 12px;
+.home-hero {
+  position: relative;
+
+  min-height: 190px;
+
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  gap: 30px;
+
+  padding: 30px 36px;
+
+  overflow: hidden;
+
+  border: 1px solid #9bd1f2;
+  border-radius: 19px;
+
+  background:
+    linear-gradient(
+      135deg,
+      #ffffff 0%,
+      #effaff 48%,
+      #d7f0ff 100%
+    );
+
+  box-shadow:
+    0 12px 30px
+    rgba(34, 89, 132, 0.10);
 }
 
-.profile-icon {
+
+/* =========================================================
+   HERO CONTENT
+========================================================= */
+
+.hero-content {
   position: relative;
 
   z-index: 3;
 
-  width: 36px;
-  height: 36px;
+  max-width: 800px;
+}
 
-  display: grid;
+.hero-eyebrow {
+  margin: 0 0 10px;
 
-  place-items: center;
+  color: #214f79;
 
-  border:
-    2px solid
-    #d8e7f4;
+  font-size: 13px;
+  font-weight: 900;
 
-  border-radius: 50%;
+  letter-spacing: 0.06em;
 
-  background: white;
-
-  color: #1269c9;
-
-  box-shadow:
-    0 3px 8px
-      rgba(22, 69, 105, .12);
+  text-transform: uppercase;
 }
 
 
 /* =========================================================
-   STATS
+   HERO TITLE
+========================================================= */
+
+.hero-title {
+  margin: 0;
+
+  color: #082f59;
+
+  font-family:
+    'Bowlby One SC',
+    Impact,
+    sans-serif;
+
+  font-size:
+    clamp(38px, 4vw, 56px);
+
+  font-weight: 400;
+
+  line-height: 0.98;
+
+  letter-spacing: -1.5px;
+
+  text-transform: none;
+
+  /* YOUR + BINDER: outline only */
+  -webkit-text-stroke: 1.5px #082f59;
+
+  text-shadow: none;
+}
+
+.hero-title span {
+  position: relative;
+
+  color: #ffd522;
+
+  /* POKÉMON: outline + shadow */
+  -webkit-text-stroke: 2px #082f59;
+
+  text-shadow:
+    3px 4px 0 #082f59;
+}
+
+.hero-description {
+  margin: 12px 0 0;
+
+  color: #315b7c;
+
+  font-size: 15px;
+  font-weight: 700;
+}
+
+
+/* =========================================================
+   HERO DECORATION
+========================================================= */
+
+.hero-decoration {
+  position: absolute;
+
+  right: -40px;
+  bottom: -70px;
+
+  width: 190px;
+  height: 190px;
+
+  border: 15px solid
+    rgba(255, 255, 255, 0.48);
+
+  border-radius: 50%;
+}
+
+.hero-ring {
+  position: absolute;
+
+  inset: 30px;
+
+  border-radius: 50%;
+
+  background:
+    rgba(255, 219, 74, 0.18);
+}
+
+.hero-ring-small {
+  position: absolute;
+
+  inset: 56px;
+
+  border-radius: 50%;
+
+  background:
+    rgba(255, 255, 255, 0.25);
+}
+
+
+/* =========================================================
+   BUTTON BASE
+========================================================= */
+
+.game-button {
+  min-height: 46px;
+
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  gap: 8px;
+
+  padding: 0 20px;
+
+  border-radius: 10px;
+
+  font-family:
+    'Bowlby One SC',
+    Impact,
+    sans-serif;
+
+  font-size: 15px;
+  font-weight: 400;
+
+  letter-spacing: 0;
+
+  transition:
+    transform 0.12s ease,
+    box-shadow 0.12s ease;
+}
+
+.game-button:hover {
+  transform: translateY(-2px);
+}
+
+
+/* =========================================================
+   PRIMARY RED ADD BUTTON
+========================================================= */
+
+.primary-button {
+  min-height: 52px;
+
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  gap: 10px;
+
+  padding: 0 25px;
+
+  background:
+    linear-gradient(
+      180deg,
+      #ff4b50 0%,
+      #f5222d 55%,
+      #df1522 100%
+    );
+
+  color: #ffffff;
+
+  border: 3px solid #092746;
+
+  border-radius: 12px;
+
+  box-shadow:
+    0 5px 0 #071c32,
+    0 8px 12px
+    rgba(5, 27, 49, 0.25);
+
+  font-family:
+    'Bowlby One SC',
+    Impact,
+    sans-serif;
+
+  font-size: 17px;
+
+  font-weight: 400;
+
+  line-height: 1;
+
+  text-shadow:
+    1px 1px 0
+    rgba(0, 0, 0, 0.12);
+
+  transition:
+    transform 0.12s ease,
+    box-shadow 0.12s ease;
+}
+
+.primary-button:hover {
+  transform: translateY(-2px);
+
+  box-shadow:
+    0 7px 0 #071c32,
+    0 11px 16px
+    rgba(5, 27, 49, 0.28);
+}
+
+.primary-button:active {
+  transform: translateY(3px);
+
+  box-shadow:
+    0 2px 0 #071c32,
+    0 4px 8px
+    rgba(5, 27, 49, 0.20);
+}
+
+
+/* =========================================================
+   BUTTON ICON
+========================================================= */
+
+.button-icon {
+  font-family:
+    Arial,
+    sans-serif;
+
+  font-size: 24px;
+
+  font-weight: 900;
+
+  line-height: 1;
+}
+
+
+/* =========================================================
+   HERO BUTTON
+========================================================= */
+
+.hero-button {
+  position: relative;
+
+  z-index: 4;
+
+  min-width: 175px;
+
+  min-height: 55px;
+}
+
+
+/* =========================================================
+   BLUE SECONDARY BUTTON
+========================================================= */
+
+.secondary-button {
+  min-height: 48px;
+
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  gap: 8px;
+
+  padding: 0 20px;
+
+  background:
+    linear-gradient(
+      180deg,
+      #1592f5 0%,
+      #0875df 100%
+    );
+
+  color: white;
+
+  border: 3px solid #092f59;
+
+  border-radius: 11px;
+
+  box-shadow:
+    0 5px 0 #092f59,
+    0 8px 14px
+    rgba(8, 117, 223, 0.22);
+
+  font-family:
+    'Bowlby One SC',
+    Impact,
+    sans-serif;
+
+  font-size: 15px;
+
+  font-weight: 400;
+
+  transition:
+    transform 0.12s ease,
+    box-shadow 0.12s ease;
+}
+
+.secondary-button:hover {
+  transform: translateY(-2px);
+
+  box-shadow:
+    0 7px 0 #092f59,
+    0 11px 18px
+    rgba(8, 117, 223, 0.26);
+}
+
+.secondary-button:active {
+  transform: translateY(3px);
+
+  box-shadow:
+    0 2px 0 #092f59,
+    0 4px 8px
+    rgba(8, 117, 223, 0.20);
+}
+
+
+/* =========================================================
+   OUTLINE BUTTON
+========================================================= */
+
+.outline-button {
+  min-height: 41px;
+
+  display: inline-flex;
+  align-items: center;
+
+  gap: 8px;
+
+  padding: 0 15px;
+
+  border: 2px solid #b7d4eb;
+  border-radius: 10px;
+
+  background: #f7fcff;
+
+  color: #12385e;
+
+  font-size: 12px;
+  font-weight: 900;
+
+  transition:
+    background 0.15s ease,
+    border-color 0.15s ease;
+}
+
+.outline-button:hover {
+  background: #eaf6ff;
+
+  border-color: #8fc4e8;
+}
+
+
+/* =========================================================
+   STAT CARDS
 ========================================================= */
 
 .stats-grid {
@@ -592,241 +761,433 @@ button {
   grid-template-columns:
     repeat(4, minmax(0, 1fr));
 
-  gap: 11px;
+  gap: 14px;
 
-  margin-bottom: 14px;
+  margin-top: 15px;
 }
 
 .stat-card {
-  position: relative;
-
-  min-height: 78px;
+  min-height: 94px;
 
   display: flex;
-
   align-items: center;
 
-  gap: 12px;
+  gap: 14px;
 
-  padding:
-    12px
-    14px;
+  padding: 15px;
 
-  overflow: hidden;
+  border: 2px solid transparent;
+  border-radius: 15px;
 
-  border:
-    1px solid
-    #d8e5ee;
+  box-shadow:
+    0 7px 20px
+    rgba(32, 86, 126, 0.07);
+}
+
+.stat-blue {
+  background: #e8f7ff;
+  border-color: #9ed6fa;
+}
+
+.stat-yellow {
+  background: #fff9dc;
+  border-color: #f5da66;
+}
+
+.stat-red {
+  background: #fff0f2;
+  border-color: #ffb8bf;
+}
+
+.stat-green {
+  background: #ebfff1;
+  border-color: #9be0ae;
+}
+
+.stat-icon {
+  width: 53px;
+  height: 53px;
+
+  flex: 0 0 53px;
+
+  display: grid;
+  place-items: center;
 
   border-radius: 14px;
 
+  font-size: 26px;
+  font-weight: 900;
+}
+
+.stat-blue .stat-icon {
+  background: #c5ebff;
+  color: #087cf0;
+}
+
+.stat-yellow .stat-icon {
+  background: #ffea99;
+  color: #d89700;
+}
+
+.stat-red .stat-icon {
+  background: #ffcbd0;
+  color: #dc3946;
+}
+
+.stat-green .stat-icon {
+  background: #c8f3d3;
+  color: #149c54;
+}
+
+.stat-content p {
+  margin: 0 0 4px;
+
+  color: #61778c;
+
+  font-size: 9px;
+  font-weight: 900;
+
+  letter-spacing: 0.06em;
+}
+
+.stat-content strong {
+  display: block;
+
+  color: #092f59;
+
+  font-family:
+    'Bowlby One SC',
+    Impact,
+    sans-serif;
+
+  font-size: 27px;
+
+  font-weight: 400;
+
+  line-height: 1;
+}
+
+
+/* =========================================================
+   HOME PANELS
+========================================================= */
+
+.home-panel {
+  margin-top: 15px;
+
+  padding: 21px;
+
+  border: 1px solid #c4dbea;
+  border-radius: 17px;
+
   background:
-    rgba(255,255,255,.94);
+    rgba(255, 255, 255, 0.97);
 
   box-shadow:
-    0 5px 13px
-      rgba(30, 73, 105, .08),
-    inset 0 1px 0
-      rgba(255,255,255,.9);
-
-  transition:
-    transform .18s ease,
-    box-shadow .18s ease;
+    0 9px 25px
+    rgba(34, 89, 132, 0.07);
 }
 
-.stat-card:hover {
-  transform:
-    translateY(-2px);
+.panel-heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
 
-  box-shadow:
-    0 9px 18px
-      rgba(30,73,105,.13);
+  gap: 20px;
+
+  margin-bottom: 17px;
 }
 
-.stat-card::after {
-  content: "";
+.panel-heading h2 {
+  margin: 0;
 
-  position: absolute;
+  color: #12385e;
 
-  right: -25px;
-  bottom: -25px;
+  font-family:
+    'Bowlby One SC',
+    Impact,
+    sans-serif;
 
-  width: 75px;
-  height: 75px;
+  font-size: 25px;
+
+  font-weight: 400;
+
+  line-height: 1.1;
+
+  letter-spacing: -0.4px;
+}
+
+.panel-heading p {
+  margin: 5px 0 0;
+
+  color: #61798f;
+
+  font-size: 13px;
+  font-weight: 600;
+}
+
+
+/* =========================================================
+   EMPTY HOME STATE
+========================================================= */
+
+.home-empty-state {
+  min-height: 265px;
+
+  display: flex;
+  flex-direction: column;
+
+  align-items: center;
+  justify-content: center;
+
+  text-align: center;
+}
+
+.empty-game-icon {
+  position: relative;
+
+  width: 76px;
+  height: 76px;
+
+  display: grid;
+  place-items: center;
+
+  margin-bottom: 8px;
 
   border-radius: 50%;
 
   background:
-    rgba(255,255,255,.28);
-}
-
-.stat-icon {
-  position: relative;
-
-  z-index: 2;
-
-  width: 38px;
-  height: 38px;
-
-  display: grid;
-
-  place-items: center;
-
-  flex-shrink: 0;
-
-  border-radius: 10px;
-
-  color: white;
-
-  font-size: 17px;
-
-  font-weight: 800;
+    radial-gradient(
+      circle,
+      white,
+      #e7f6ff
+    );
 
   box-shadow:
-    inset 0 1px 1px
-      rgba(255,255,255,.35),
-    0 3px 6px
-      rgba(0,0,0,.1);
+    0 8px 20px
+    rgba(35, 100, 150, 0.10);
 }
 
-.stat-card.blue .stat-icon {
-  background:
-    linear-gradient(
-      145deg,
-      #218cf7,
-      #1266db
-    );
+.empty-card {
+  color: #087cf0;
+
+  font-size: 40px;
+  font-weight: 900;
 }
 
-.stat-card.green .stat-icon {
-  background:
-    linear-gradient(
-      145deg,
-      #25c884,
-      #0fa56a
-    );
+.spark {
+  position: absolute;
+
+  color: #f5c929;
+
+  font-size: 16px;
 }
 
-.stat-card.yellow .stat-icon {
-  background:
-    linear-gradient(
-      145deg,
-      #f7bd2c,
-      #e29b08
-    );
+.spark-one {
+  right: 3px;
+  top: 3px;
 }
 
-.stat-card.purple .stat-icon {
-  background:
-    linear-gradient(
-      145deg,
-      #9763ed,
-      #7141c7
-    );
+.spark-two {
+  left: 4px;
+  top: 25px;
 }
 
-.stat-card p {
-  position: relative;
-
-  z-index: 2;
-
-  margin: 0 0 3px;
-
-  color: #6c8299;
-
-  font-size: 9px;
-
-  font-weight: 800;
-
-  text-transform: uppercase;
+.spark-three {
+  right: 8px;
+  bottom: 6px;
 }
 
-.stat-card strong {
-  position: relative;
+.home-empty-state h3 {
+  margin: 7px 0 5px;
 
-  z-index: 2;
+  color: #12385e;
 
-  color: #0e3157;
+  font-family:
+    'Bowlby One SC',
+    Impact,
+    sans-serif;
 
-  font-size: 21px;
+  font-size: 24px;
+
+  font-weight: 400;
+}
+
+.home-empty-state p {
+  margin: 0 0 16px;
+
+  color: #61798f;
+
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.home-loading {
+  min-height: 220px;
+
+  display: grid;
+  place-items: center;
+
+  color: #6d8499;
+
+  font-size: 14px;
+  font-weight: 700;
 }
 
 
 /* =========================================================
-   PANELS
+   RECENT CARD GRID
 ========================================================= */
 
-.section-panel,
-.quick-actions,
-.add-card-panel,
-.details-panel {
-  border:
-    1px solid
-    #d9e6ef;
+.recent-card-grid {
+  display: grid;
 
-  border-radius: 16px;
+  grid-template-columns:
+    repeat(4, minmax(0, 1fr));
 
-  background:
-    rgba(255,255,255,.94);
-
-  box-shadow:
-    0 7px 20px
-      rgba(27, 67, 99, .08),
-    inset 0 1px 0
-      rgba(255,255,255,.9);
+  gap: 13px;
 }
 
-.section-panel {
+
+/* =========================================================
+   CARD TILE
+========================================================= */
+
+.card-tile {
+  overflow: hidden;
+
+  padding: 0;
+
+  border: 1px solid #cbddeb;
+  border-radius: 14px;
+
+  background: white;
+
+  color: inherit;
+
+  text-align: left;
+
+  box-shadow:
+    0 6px 16px
+    rgba(33, 82, 119, 0.08);
+
+  transition:
+    transform 0.15s ease,
+    box-shadow 0.15s ease;
+}
+
+.card-tile:hover {
+  transform: translateY(-4px);
+
+  box-shadow:
+    0 12px 24px
+    rgba(33, 82, 119, 0.14);
+}
+
+.card-image-wrapper {
+  position: relative;
+
+  height: 205px;
+
+  display: grid;
+  place-items: center;
+
+  overflow: hidden;
+
+  background:
+    linear-gradient(
+      145deg,
+      #eef9ff,
+      #f9fcff
+    );
+}
+
+.card-image {
+  width: 100%;
+  height: 100%;
+
+  object-fit: contain;
+}
+
+.card-image-placeholder {
+  width: 100%;
+  height: 100%;
+
+  display: grid;
+  place-items: center;
+
+  color: #66a8d6;
+
+  font-size: 46px;
+
+  background:
+    linear-gradient(
+      145deg,
+      #e8f6ff,
+      #f8fcff
+    );
+}
+
+.card-tile-info {
   padding: 13px;
 }
 
-.section-title-row {
-  display: flex;
-
-  align-items: center;
-
-  justify-content: space-between;
-
-  margin:
-    0
-    5px
-    12px;
-}
-
-.section-title-row h3,
-.quick-actions h3 {
+.card-tile-info h3 {
   margin: 0;
 
-  color: #102d50;
+  overflow: hidden;
 
-  font-size: 16px;
+  color: #12385e;
 
-  font-weight: 850;
+  font-family:
+    'Bowlby One SC',
+    Impact,
+    sans-serif;
+
+  font-size: 17px;
+
+  font-weight: 400;
+
+  white-space: nowrap;
+
+  text-overflow: ellipsis;
 }
 
-.view-button {
-  border: 0;
+.card-tile-info p {
+  margin: 4px 0 9px;
 
-  background: transparent;
+  overflow: hidden;
 
-  color: #086ce6;
+  color: #71869a;
+
+  font-size: 12px;
+  font-weight: 600;
+
+  white-space: nowrap;
+
+  text-overflow: ellipsis;
+}
+
+.card-tile-meta {
+  display: flex;
+  justify-content: space-between;
+
+  color: #42637f;
 
   font-size: 11px;
-
   font-weight: 800;
-}
-
-.view-button:hover {
-  text-decoration: underline;
 }
 
 
 /* =========================================================
-   CARD GRID
+   BUILD YOUR COLLECTION
 ========================================================= */
 
-.recent-grid,
-.collection-grid {
+.build-panel {
+  padding-bottom: 20px;
+}
+
+.feature-grid {
   display: grid;
 
   grid-template-columns:
@@ -835,694 +1196,848 @@ button {
   gap: 11px;
 }
 
-
-/* =========================================================
-   POKÉMON CARD
-========================================================= */
-
-.pokemon-card {
-  position: relative;
-
-  width: 100%;
-
-  overflow: hidden;
-
-  padding: 0;
-
-  border:
-    1px solid
-    #d7e3ed;
-
-  border-radius: 13px;
-
-  background: white;
-
-  color: #102d50;
-
-  text-align: left;
-
-  box-shadow:
-    0 4px 11px
-      rgba(28, 66, 96, .08),
-    inset 0 1px 0
-      rgba(255,255,255,.9);
-
-  transition:
-    transform .18s ease,
-    box-shadow .18s ease;
-}
-
-.pokemon-card:hover {
-  transform:
-    translateY(-4px);
-
-  box-shadow:
-    0 11px 23px
-      rgba(25, 69, 105, .15);
-}
-
-.pokemon-card::before {
-  content: "";
-
-  position: absolute;
-
-  top: 0;
-  left: 0;
-  right: 0;
-
-  height: 3px;
-
-  background:
-    linear-gradient(
-      90deg,
-      #ffd43d,
-      #ffbf22,
-      #ffd43d
-    );
-}
-
-.pokemon-card-image {
-  height: 185px;
+.feature-card {
+  min-height: 102px;
 
   display: flex;
-
   align-items: center;
 
-  justify-content: center;
-
-  padding: 9px;
-
-  background:
-    radial-gradient(
-      circle at 50% 40%,
-      rgba(255, 220, 70, .18),
-      transparent 45%
-    ),
-    linear-gradient(
-      145deg,
-      #f3faff,
-      #fffdf2
-    );
-}
-
-.pokemon-card-image img {
-  width: 100%;
-  height: 100%;
-
-  object-fit: contain;
-
-  filter:
-    drop-shadow(
-      0 5px 5px
-      rgba(30,60,90,.12)
-    );
-}
-
-.image-placeholder {
-  color: #f2b917;
-
-  font-size: 50px;
-
-  filter:
-    drop-shadow(
-      0 4px 3px
-      rgba(0,0,0,.12)
-    );
-}
-
-.pokemon-card-info {
-  padding:
-    9px
-    11px
-    11px;
-}
-
-.pokemon-card-info h3 {
-  margin:
-    0
-    0
-    3px;
-
-  color: #102d50;
-
-  font-size: 13px;
-
-  font-weight: 850;
-}
-
-.pokemon-card-info p {
-  margin: 2px 0;
-
-  color: #607b98;
-
-  font-size: 10px;
-}
-
-.card-footer {
-  display: flex;
-
-  align-items: center;
-
-  justify-content: space-between;
-
-  margin-top: 7px;
-}
-
-.card-footer span {
-  color: #54718f;
-
-  font-size: 9px;
-
-  font-weight: 600;
-}
-
-.card-footer b {
-  padding:
-    4px
-    8px;
-
-  border-radius: 20px;
-
-  background: #e8f3ff;
-
-  color: #1c588b;
-
-  font-size: 9px;
-}
-
-
-/* =========================================================
-   QUICK ACTIONS
-========================================================= */
-
-.quick-actions {
-  position: relative;
-
-  margin-top: 13px;
+  gap: 11px;
 
   padding: 14px;
 
-  overflow: hidden;
-
-  background:
-    radial-gradient(
-      circle at 75% 120%,
-      rgba(255, 211, 51, .42),
-      transparent 30%
-    ),
-    linear-gradient(
-      135deg,
-      #fffef2,
-      #fff9d8
-    );
+  border-radius: 13px;
 }
 
-.quick-actions::after {
-  content: "◉";
+.feature-blue {
+  background: #eaf7ff;
+}
+
+.feature-yellow {
+  background: #fff8dc;
+}
+
+.feature-pink {
+  background: #fff0f2;
+}
+
+.feature-green {
+  background: #edfff2;
+}
+
+.feature-icon {
+  width: 45px;
+  height: 45px;
+
+  flex: 0 0 45px;
+
+  display: grid;
+  place-items: center;
+
+  border-radius: 12px;
+
+  font-size: 22px;
+  font-weight: 900;
+}
+
+.feature-blue .feature-icon {
+  background: #c8ebff;
+  color: #087cf0;
+}
+
+.feature-yellow .feature-icon {
+  background: #ffe99a;
+  color: #df9b00;
+}
+
+.feature-pink .feature-icon {
+  background: #ffcdd1;
+  color: #df3845;
+}
+
+.feature-green .feature-icon {
+  background: #c9f5d5;
+  color: #149c54;
+}
+
+.feature-card h3 {
+  margin: 0 0 4px;
+
+  color: #173d60;
+
+  font-family:
+    'Bowlby One SC',
+    Impact,
+    sans-serif;
+
+  font-size: 17px;
+
+  font-weight: 400;
+
+  line-height: 1.05;
+}
+
+.feature-card p {
+  margin: 0;
+
+  color: #71869a;
+
+  font-size: 11px;
+  font-weight: 600;
+
+  line-height: 1.4;
+}
+
+
+/* =========================================================
+   COLLECTION PAGE
+========================================================= */
+
+.collection-page {
+  width: 100%;
+}
+
+
+/* =========================================================
+   COLLECTION HERO
+========================================================= */
+
+.collection-hero {
+  position: relative;
+
+  min-height: 180px;
+
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  gap: 25px;
+
+  padding: 30px 34px;
+
+  overflow: hidden;
+
+  border: 1px solid #9bd1f2;
+  border-radius: 19px;
+
+  background:
+    linear-gradient(
+      135deg,
+      #ffffff 0%,
+      #effaff 48%,
+      #d7f0ff 100%
+    );
+
+  box-shadow:
+    0 12px 30px
+    rgba(34, 89, 132, 0.10);
+}
+
+.collection-hero::after {
+  content: '';
 
   position: absolute;
 
-  right: 65px;
-  bottom: -55px;
+  right: -35px;
+  bottom: -80px;
 
-  color:
-    rgba(241, 190, 30, .18);
+  width: 210px;
+  height: 210px;
 
-  font-size: 150px;
+  border: 18px solid
+    rgba(255, 255, 255, 0.40);
+
+  border-radius: 50%;
 }
 
-.quick-action-button {
+.collection-hero-content {
   position: relative;
 
   z-index: 2;
-
-  width: 250px;
-
-  margin-top: 10px;
-
-  padding: 11px;
-
-  border: 0;
-
-  border-radius: 9px;
-
-  background:
-    linear-gradient(
-      135deg,
-      #087af5,
-      #0864dc
-    );
-
-  color: white;
-
-  font-weight: 800;
-
-  box-shadow:
-    0 6px 12px
-      rgba(8, 103, 225, .24),
-    inset 0 1px 0
-      rgba(255,255,255,.25);
-
-  transition:
-    transform .15s ease,
-    box-shadow .15s ease;
 }
 
-.quick-action-button:hover {
-  transform:
-    translateY(-2px);
+.collection-hero .page-eyebrow {
+  margin: 0 0 8px;
 
-  box-shadow:
-    0 9px 17px
-      rgba(8,103,225,.3);
+  color: #315b7c;
+
+  font-size: 12px;
+  font-weight: 900;
+
+  letter-spacing: 0.08em;
+
+  text-transform: uppercase;
 }
 
+.collection-hero h1 {
+  margin: 0;
 
-/* =========================================================
-   BUTTONS
-========================================================= */
+  color: #082f59;
 
-.primary-button {
-  border: 0;
+  font-family:
+    'Bowlby One SC',
+    Impact,
+    sans-serif;
 
-  border-radius: 9px;
+  font-size:
+    clamp(34px, 4vw, 48px);
 
-  padding:
-    11px
-    19px;
+  font-weight: 400;
 
-  background:
-    linear-gradient(
-      135deg,
-      #087cf4,
-      #0863d9
-    );
+  line-height: 1;
 
-  color: white;
+  letter-spacing: -1px;
 
-  font-weight: 800;
-
-  box-shadow:
-    0 5px 11px
-      rgba(8, 103, 225, .22),
-    inset 0 1px 0
-      rgba(255,255,255,.25);
-
-  transition:
-    transform .15s ease,
-    box-shadow .15s ease;
+  -webkit-text-stroke: 1px #082f59;
 }
 
-.primary-button:hover {
-  transform:
-    translateY(-1px);
+.collection-hero p {
+  margin: 10px 0 0;
 
-  box-shadow:
-    0 8px 15px
-      rgba(8,103,225,.28);
-}
+  color: #55748e;
 
-.cancel-button,
-.delete-button {
-  border-radius: 9px;
-
-  padding:
-    10px
-    21px;
-
-  background: white;
-
+  font-size: 14px;
   font-weight: 700;
 }
 
-.cancel-button {
-  border:
-    1px solid
-    #c8d9e8;
+.collection-hero-action {
+  position: relative;
 
-  color: #355472;
-
-  box-shadow:
-    0 3px 7px
-      rgba(31, 69, 98, .06);
-}
-
-.cancel-button:hover {
-  background: #f5f9fc;
-}
-
-.delete-button {
-  border:
-    1px solid
-    #f2b0b0;
-
-  background: #fff1f1;
-
-  color: #d73838;
-}
-
-.delete-button:hover {
-  background: #ffe3e3;
+  z-index: 3;
 }
 
 
 /* =========================================================
-   COLLECTION
+   COLLECTION TOOLBAR
 ========================================================= */
 
 .collection-toolbar {
   display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  gap: 14px;
+
+  margin-top: 15px;
+
+  padding: 14px;
+
+  border: 1px solid #c7dce9;
+  border-radius: 14px;
+
+  background:
+    rgba(255, 255, 255, 0.96);
+
+  box-shadow:
+    0 6px 18px
+    rgba(34, 89, 132, 0.06);
+}
+
+.collection-tools {
+  flex: 1;
+
+  display: grid;
+
+  grid-template-columns:
+    minmax(220px, 1fr)
+    165px;
 
   gap: 10px;
 
-  margin:
-    13px
-    0
-    4px;
+  margin: 0;
 }
 
 .search-box {
-  flex: 1;
+  height: 45px;
 
   display: flex;
-
   align-items: center;
 
-  gap: 8px;
+  gap: 10px;
 
-  padding:
-    0
-    13px;
+  padding: 0 13px;
 
-  border:
-    1px solid
-    #c9dceb;
+  border: 2px solid #c4dbe9;
+  border-radius: 10px;
 
-  border-radius: 9px;
+  background: #fbfdff;
 
-  background: white;
+  transition:
+    border-color 0.15s ease,
+    box-shadow 0.15s ease;
+}
+
+.search-box:focus-within {
+  border-color: #1592f5;
 
   box-shadow:
-    0 3px 8px
-      rgba(29,67,99,.05);
+    0 0 0 3px
+    rgba(21, 146, 245, 0.10);
 }
 
 .search-box span {
-  color: #6d87a1;
+  color: #4f7898;
 
-  font-size: 20px;
+  font-size: 19px;
+
+  line-height: 1;
 }
 
 .search-box input {
   width: 100%;
 
-  padding: 10px 0;
-
   border: 0;
-
   outline: 0;
 
-  color: #102d50;
-
   background: transparent;
+
+  color: #12385e;
+
+  font-size: 13px;
+  font-weight: 700;
 }
 
-.collection-toolbar select {
-  width: 150px;
+.search-box input::placeholder {
+  color: #8ba1b2;
+}
 
-  padding:
-    0
-    10px;
+.rarity-filter {
+  height: 45px;
 
-  border:
-    1px solid
-    #c9dceb;
+  padding: 0 13px;
 
-  border-radius: 9px;
+  border: 2px solid #c4dbe9;
+  border-radius: 10px;
 
-  background: white;
+  background: #fbfdff;
 
-  color: #31547a;
+  color: #345b7c;
+
+  outline: none;
+
+  font-size: 12px;
+  font-weight: 800;
+
+  cursor: pointer;
+}
+
+.rarity-filter:focus {
+  border-color: #1592f5;
 
   box-shadow:
-    0 3px 8px
-      rgba(29,67,99,.05);
-}
-
-.toolbar-add {
-  white-space: nowrap;
+    0 0 0 3px
+    rgba(21, 146, 245, 0.10);
 }
 
 .collection-count {
-  margin:
-    9px
-    2px;
+  min-width: 105px;
 
-  color: #7188a1;
+  padding: 8px 12px;
 
-  font-size: 10px;
-}
+  border-radius: 9px;
 
-.collection-grid {
-  grid-template-columns:
-    repeat(4, minmax(145px, 1fr));
+  background: #eaf7ff;
+
+  color: #176da5;
+
+  font-size: 11px;
+  font-weight: 900;
+
+  text-align: center;
 }
 
 
 /* =========================================================
-   EMPTY STATE
+   COLLECTION GRID
 ========================================================= */
 
-.empty-small {
-  min-height: 200px;
+.collection-grid {
+  display: grid;
 
-  display: flex;
+  grid-template-columns:
+    repeat(4, minmax(0, 1fr));
 
-  flex-direction: column;
+  gap: 15px;
 
-  align-items: center;
-
-  justify-content: center;
-
-  padding: 30px;
-
-  text-align: center;
-
-  color: #6c8299;
+  margin-top: 15px;
 }
 
-.empty-small h3 {
-  margin:
-    8px
-    0;
 
-  color: #46617e;
+/* =========================================================
+   COLLECTION CARD
+========================================================= */
 
-  font-size: 17px;
+.collection-grid .card-tile {
+  position: relative;
+
+  min-width: 0;
+
+  overflow: hidden;
+
+  border: 2px solid #d1e0eb;
+  border-radius: 15px;
+
+  background: #ffffff;
+
+  box-shadow:
+    0 7px 18px
+    rgba(30, 73, 105, 0.08);
+
+  transition:
+    transform 0.16s ease,
+    border-color 0.16s ease,
+    box-shadow 0.16s ease;
 }
 
-.empty-small p {
-  margin:
-    0
-    0
-    14px;
+.collection-grid .card-tile:hover {
+  transform: translateY(-5px);
 
-  font-size: 11px;
+  border-color: #8ec7ed;
+
+  box-shadow:
+    0 13px 25px
+    rgba(30, 73, 105, 0.14);
 }
 
-.empty-logo {
-  width: 48px;
-  height: 48px;
+.collection-grid .card-image-wrapper {
+  height: 250px;
 
-  margin-bottom: 4px;
+  padding: 14px;
+
+  background:
+    linear-gradient(
+      145deg,
+      #edf9ff 0%,
+      #f9fcff 70%,
+      #fffdf0 100%
+    );
+
+  border-bottom: 1px solid #dce8f0;
 }
 
-.empty-logo img {
+.collection-grid .card-image {
   width: 100%;
   height: 100%;
 
   object-fit: contain;
 
-  opacity: .75;
-}
-
-
-/* =========================================================
-   ADD CARD
-========================================================= */
-
-.add-card-panel {
-  display: grid;
-
-  grid-template-columns:
-    205px
-    1fr;
-
-  gap: 21px;
-
-  padding: 18px;
-}
-
-.upload-box {
-  min-height: 245px;
-
-  display: flex;
-
-  flex-direction: column;
-
-  align-items: center;
-
-  justify-content: center;
-
-  padding: 18px;
-
-  border:
-    2px dashed
-    #82bdf0;
-
-  border-radius: 11px;
-
-  background:
-    radial-gradient(
-      circle at 50% 40%,
-      rgba(255,255,255,.9),
-      transparent 45%
-    ),
-    linear-gradient(
-      180deg,
-      #f3faff,
-      #e7f5ff
+  filter:
+    drop-shadow(
+      0 7px 8px
+      rgba(31, 68, 95, 0.12)
     );
 
-  text-align: center;
+  transition:
+    transform 0.16s ease;
 }
 
-.upload-icon {
-  width: 50px;
-  height: 50px;
+.collection-grid .card-tile:hover .card-image {
+  transform: scale(1.035);
+}
 
-  display: grid;
+.collection-grid .card-image-placeholder {
+  height: 100%;
 
-  place-items: center;
-
-  border-radius: 13px;
+  border-radius: 9px;
 
   background:
     linear-gradient(
       145deg,
-      #2c72b8,
-      #174e82
+      #e5f5ff,
+      #f8fcff
     );
 
-  color: white;
+  color: #65a5d2;
 
-  font-size: 20px;
-
-  box-shadow:
-    0 6px 12px
-      rgba(22, 72, 113, .2);
+  font-size: 45px;
 }
 
-.upload-box h3 {
-  margin:
-    12px
-    0
-    5px;
-
-  color: #173c65;
-
-  font-size: 13px;
+.collection-grid .card-tile-info {
+  padding: 15px;
 }
 
-.upload-box p,
-.upload-box small {
-  margin: 2px;
+.collection-grid .card-tile-info h3 {
+  margin: 0;
 
-  color: #6883a0;
+  color: #12385e;
 
-  font-size: 9px;
+  font-family:
+    'Bowlby One SC',
+    Impact,
+    sans-serif;
+
+  font-size: 18px;
+
+  font-weight: 400;
+
+  line-height: 1.05;
+
+  white-space: nowrap;
+
+  overflow: hidden;
+
+  text-overflow: ellipsis;
 }
 
-.form-fields {
-  display: grid;
+.collection-grid .card-tile-info p {
+  margin: 5px 0 11px;
 
-  grid-template-columns:
-    1fr
-    1fr;
-
-  gap: 14px;
-}
-
-.form-field,
-.full-form-field {
-  display: flex;
-
-  flex-direction: column;
-
-  gap: 6px;
-}
-
-.form-field label,
-.full-form-field label {
-  color: #18385c;
+  color: #71869a;
 
   font-size: 11px;
+  font-weight: 700;
 
-  font-weight: 800;
+  white-space: nowrap;
+
+  overflow: hidden;
+
+  text-overflow: ellipsis;
 }
 
-.required {
-  margin-left: 3px;
+.collection-grid .card-tile-meta {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
 
-  color: #e74343;
+  gap: 8px;
 }
 
-.form-field input,
-.full-form-field input {
-  width: 100%;
+.collection-grid .card-tile-meta span {
+  padding: 5px 8px;
 
-  padding: 10px;
+  border-radius: 7px;
 
-  border:
-    1px solid
-    #cbdceb;
+  background: #eef7fc;
 
-  border-radius: 8px;
+  color: #47718f;
 
-  outline: 0;
+  font-size: 10px;
+  font-weight: 900;
+}
 
-  color: #102d50;
+.collection-grid .card-tile-meta span:last-child {
+  background: #fff3bd;
+
+  color: #876600;
+}
+
+
+/* =========================================================
+   COLLECTION EMPTY STATE
+========================================================= */
+
+.page-empty {
+  min-height: 430px;
+
+  display: flex;
+  flex-direction: column;
+
+  align-items: center;
+  justify-content: center;
+
+  padding: 35px;
+
+  text-align: center;
+
+  border: 2px dashed #bcd6e7;
+  border-radius: 17px;
+
+  background:
+    rgba(255,255,255,0.82);
+
+  margin-top: 15px;
+}
+
+.large-empty-icon {
+  width: 84px;
+  height: 84px;
+
+  display: grid;
+  place-items: center;
+
+  margin-bottom: 12px;
+
+  border: 2px solid #c5e1f2;
+
+  border-radius: 50%;
+
+  background:
+    radial-gradient(
+      circle,
+      #ffffff 15%,
+      #e7f6ff 100%
+    );
+
+  color: #087cf0;
+
+  font-size: 37px;
+
+  box-shadow:
+    0 8px 18px
+    rgba(34, 105, 155, 0.08);
+}
+
+.page-empty h2 {
+  margin: 0 0 7px;
+
+  color: #12385e;
+
+  font-family:
+    'Bowlby One SC',
+    Impact,
+    sans-serif;
+
+  font-size: 25px;
+
+  font-weight: 400;
+
+  line-height: 1.1;
+}
+
+.page-empty p {
+  max-width: 430px;
+
+  margin: 0 0 18px;
+
+  color: #71869a;
+
+  font-size: 13px;
+  font-weight: 600;
+
+  line-height: 1.5;
+}
+
+
+/* =========================================================
+   LOADING
+========================================================= */
+
+.empty-loader {
+  width: 45px;
+  height: 45px;
+
+  margin-bottom: 12px;
+
+  border: 5px solid #d8ecf8;
+  border-top-color: #087cf0;
+
+  border-radius: 50%;
+
+  color: transparent;
+
+  font-size: 0;
+
+  animation:
+    spin 0.8s linear infinite;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+
+/* =========================================================
+   ADD CARD PAGE
+========================================================= */
+
+.form-page-header {
+  padding: 10px 3px 20px;
+}
+
+.card-form {
+  overflow: hidden;
+
+  border: 1px solid #cbddeb;
+  border-radius: 17px;
 
   background: white;
 
   box-shadow:
-    inset 0 1px 2px
-      rgba(22,57,87,.03);
+    0 8px 22px
+    rgba(34, 89, 132, 0.07);
+}
+
+.form-section {
+  padding: 25px;
+
+  border-bottom: 1px solid #e3edf4;
+}
+
+.form-section-title {
+  display: flex;
+
+  gap: 13px;
+
+  margin-bottom: 20px;
+}
+
+.form-section-title > span {
+  width: 35px;
+  height: 35px;
+
+  display: grid;
+  place-items: center;
+
+  flex: 0 0 35px;
+
+  border-radius: 9px;
+
+  background: #e8f6ff;
+
+  color: #087cf0;
+
+  font-size: 11px;
+  font-weight: 900;
+}
+
+.form-section-title h2 {
+  margin: 0;
+
+  color: #12385e;
+
+  font-family:
+    'Bowlby One SC',
+    Impact,
+    sans-serif;
+
+  font-size: 20px;
+
+  font-weight: 400;
+}
+
+.form-section-title p {
+  margin: 3px 0 0;
+
+  color: #71869a;
+
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.form-grid {
+  display: grid;
+
+  grid-template-columns:
+    repeat(2, minmax(0, 1fr));
+
+  gap: 17px;
+}
+
+.form-field {
+  display: flex;
+  flex-direction: column;
+
+  gap: 7px;
+}
+
+.form-field span {
+  color: #345b7c;
+
+  font-size: 12px;
+  font-weight: 800;
+}
+
+.form-field input,
+.form-field select {
+  width: 100%;
+
+  height: 44px;
+
+  padding: 0 12px;
+
+  border: 1px solid #c5d9e8;
+  border-radius: 9px;
+
+  outline: none;
+
+  background: #fbfdff;
+
+  color: #12385e;
+
+  font-size: 13px;
+  font-weight: 600;
 }
 
 .form-field input:focus,
-.full-form-field input:focus {
-  border-color: #2785ed;
+.form-field select:focus {
+  border-color: #087cf0;
 
   box-shadow:
     0 0 0 3px
-      rgba(39,133,237,.1);
+    rgba(8, 124, 240, 0.10);
 }
 
-.full-form-field {
-  grid-column: 1 / -1;
+.full-field {
+  width: 100%;
 }
 
 .form-actions {
-  grid-column: 1 / -1;
-
   display: flex;
-
   justify-content: flex-end;
 
-  gap: 9px;
+  gap: 10px;
 
-  margin-top: 2px;
+  padding: 18px 25px;
+
+  background: #f8fbfd;
+}
+
+.cancel-button,
+.delete-button {
+  min-height: 43px;
+
+  padding: 0 17px;
+
+  border-radius: 9px;
+
+  font-size: 13px;
+  font-weight: 800;
+}
+
+.cancel-button {
+  border: 1px solid #c5d9e8;
+
+  background: white;
+
+  color: #4e6d87;
+}
+
+.delete-button {
+  border: 1px solid #f0aeb3;
+
+  background: #fff1f2;
+
+  color: #c52e39;
+}
+
+.delete-button:hover {
+  background: #ffe1e4;
+}
+
+
+/* =========================================================
+   BACK BUTTON
+========================================================= */
+
+.back-button {
+  margin-bottom: 12px;
+
+  padding: 8px 0;
+
+  border: 0;
+
+  background: transparent;
+
+  color: #27628e;
+
+  font-size: 13px;
+  font-weight: 800;
+}
+
+.back-button:hover {
+  color: #087cf0;
 }
 
 
@@ -1530,147 +2045,137 @@ button {
    CARD DETAILS
 ========================================================= */
 
-.back-link {
-  margin:
-    3px
-    0
-    12px;
+.details-page {
+  overflow: hidden;
 
-  border: 0;
-
-  background: transparent;
-
-  color: #0768e9;
-
-  font-size: 12px;
-
-  font-weight: 800;
-}
-
-.back-link:hover {
-  text-decoration: underline;
-}
-
-.details-panel {
   display: grid;
 
   grid-template-columns:
-    340px
-    1fr;
+    minmax(300px, 0.85fr)
+    minmax(400px, 1.15fr);
 
-  gap: 25px;
+  border: 1px solid #d1dfeb;
+  border-radius: 18px;
 
-  padding: 25px;
+  background: white;
+
+  box-shadow:
+    0 10px 28px
+    rgba(34, 89, 132, 0.08);
 }
 
 .details-image {
-  height: 430px;
+  min-height: 560px;
 
-  display: flex;
+  display: grid;
+  place-items: center;
 
-  align-items: center;
-
-  justify-content: center;
-
-  padding: 15px;
-
-  border-radius: 13px;
+  padding: 35px;
 
   background:
-    radial-gradient(
-      circle at center,
-      #fff8ce,
-      #fffef1
+    linear-gradient(
+      145deg,
+      #fffce9,
+      #fff7cc
     );
-
-  box-shadow:
-    inset 0 0 25px
-      rgba(255, 211, 52, .12);
 }
 
 .details-image img {
   max-width: 100%;
-  max-height: 100%;
+  max-height: 490px;
 
   object-fit: contain;
 
   filter:
     drop-shadow(
-      0 9px 9px
-      rgba(30,60,90,.16)
+      0 15px 15px
+      rgba(48, 70, 88, 0.14)
     );
 }
 
-.details-info {
-  padding-top: 5px;
+.details-image-placeholder {
+  width: 150px;
+  height: 210px;
+
+  display: grid;
+  place-items: center;
+
+  border: 4px solid #77b6de;
+  border-radius: 14px;
+
+  background: #e7f5ff;
+
+  color: #3285b9;
+
+  font-size: 65px;
 }
 
-.details-title {
-  display: flex;
-
-  align-items: center;
-
-  gap: 12px;
-
-  margin-bottom: 20px;
+.details-content {
+  padding: 38px 34px;
 }
 
-.details-title h2 {
+.details-content h1 {
   margin: 0;
 
-  color: #102d50;
+  color: #12385e;
 
-  font-size: 32px;
+  font-family:
+    'Bowlby One SC',
+    Impact,
+    sans-serif;
 
+  font-size: 38px;
+
+  font-weight: 400;
+
+  line-height: 1.05;
+}
+
+.details-set {
+  margin: 6px 0 12px;
+
+  color: #6e8497;
+
+  font-size: 15px;
+  font-weight: 600;
+}
+
+.details-rarity {
+  display: inline-flex;
+
+  padding: 7px 11px;
+
+  border-radius: 8px;
+
+  background: #fff2bd;
+
+  color: #8a6500;
+
+  font-size: 11px;
   font-weight: 900;
 }
 
-.details-title span {
-  padding:
-    6px
-    11px;
+.details-table {
+  margin-top: 24px;
 
-  border-radius: 20px;
-
-  background: #e6f0ff;
-
-  color: #1f6fd2;
-
-  font-size: 10px;
-
-  font-weight: 800;
-}
-
-.details-list {
   overflow: hidden;
 
-  border:
-    1px solid
-    #dce7ef;
-
-  border-radius: 11px;
-
-  background: white;
-
-  box-shadow:
-    0 4px 10px
-      rgba(29,67,99,.04);
+  border: 1px solid #d5e2ec;
+  border-radius: 12px;
 }
 
 .detail-row {
-  display: flex;
+  min-height: 49px;
 
+  display: flex;
+  align-items: center;
   justify-content: space-between;
 
-  padding:
-    11px
-    13px;
+  gap: 20px;
 
-  border-bottom:
-    1px solid
-    #e5edf3;
+  padding: 0 14px;
 
-  font-size: 12px;
+  border-bottom: 1px solid #e1eaf1;
 }
 
 .detail-row:last-child {
@@ -1678,175 +2183,654 @@ button {
 }
 
 .detail-row span {
-  color: #607a96;
+  color: #71869a;
+
+  font-size: 11px;
+  font-weight: 700;
 }
 
 .detail-row strong {
-  color: #102d50;
-}
+  color: #12385e;
 
-.about-card {
-  margin-top: 15px;
-
-  padding: 14px;
-
-  border:
-    1px solid
-    #dce7ef;
-
-  border-radius: 11px;
-
-  background:
-    linear-gradient(
-      135deg,
-      #fafdff,
-      #f2f9ff
-    );
-
-  box-shadow:
-    0 4px 10px
-      rgba(29,67,99,.04);
-}
-
-.about-card h3 {
-  margin:
-    0
-    0
-    8px;
-
-  color: #102d50;
-
-  font-size: 13px;
-}
-
-.about-card p {
-  margin: 0;
-
-  color: #526d8b;
-
-  font-size: 11px;
-
-  line-height: 1.6;
+  font-size: 12px;
+  font-weight: 900;
 }
 
 .details-actions {
   display: flex;
-
   justify-content: flex-end;
 
-  gap: 8px;
+  gap: 9px;
 
-  margin-top: 15px;
+  margin-top: 20px;
 }
 
 
 /* =========================================================
-   ERROR
+   TABLET
 ========================================================= */
 
-.error-notice {
-  margin-bottom: 10px;
-
-  padding:
-    10px
-    13px;
-
-  border:
-    1px solid
-    #f1b7b7;
-
-  border-radius: 8px;
-
-  background: #fff1f1;
-
-  color: #a83232;
-
-  font-size: 12px;
-}
-
-
-/* =========================================================
-   RESPONSIVE
-========================================================= */
-
-@media (max-width: 1050px) {
+@media (max-width: 1100px) {
 
   .stats-grid {
     grid-template-columns:
-      repeat(2, 1fr);
+      repeat(2, minmax(0, 1fr));
   }
 
-  .recent-grid,
+  .recent-card-grid,
   .collection-grid {
     grid-template-columns:
-      repeat(2, 1fr);
+      repeat(3, minmax(0, 1fr));
   }
 
-  .add-card-panel,
-  .details-panel {
+  .feature-grid {
     grid-template-columns:
-      1fr;
+      repeat(2, minmax(0, 1fr));
   }
 
 }
 
 
-@media (max-width: 700px) {
+/* =========================================================
+   SMALL TABLET
+========================================================= */
+
+@media (max-width: 850px) {
 
   .sidebar {
-    position: relative;
-
-    width: 100%;
-
-    height: auto;
-
-    min-height: auto;
-  }
-
-  .sidebar-art {
-    display: none;
-  }
-
-  .app {
-    display: block;
+    width: 270px;
   }
 
   .main-content {
+    margin-left: 270px;
+
+    padding: 18px;
+  }
+
+  .brand-name {
+    font-size: 20px;
+  }
+
+  .brand-subtitle {
+    font-size: 7px;
+  }
+
+  .nav-item {
+    padding: 0 10px;
+
+    font-size: 12px;
+  }
+
+  .home-hero {
+    flex-direction: column;
+
+    align-items: flex-start;
+  }
+
+  .hero-button {
+    width: 100%;
+  }
+
+  .collection-hero {
+    flex-direction: column;
+
+    align-items: flex-start;
+  }
+
+  .collection-hero-action {
+    width: 100%;
+  }
+
+  .collection-hero-action .primary-button {
+    width: 100%;
+  }
+
+  .collection-toolbar {
+    flex-direction: column;
+
+    align-items: stretch;
+  }
+
+  .collection-tools {
+    width: 100%;
+  }
+
+  .collection-count {
+    width: 100%;
+  }
+
+  .details-page {
+    grid-template-columns: 1fr;
+  }
+
+  .details-image {
+    min-height: 400px;
+  }
+
+}
+
+
+/* =========================================================
+   MOBILE
+========================================================= */
+
+@media (max-width: 650px) {
+
+  .sidebar {
+    position: static;
+
     width: 100%;
 
+    min-height: auto;
+
+    flex-direction: row;
+
+    align-items: center;
+
+    padding: 10px 14px;
+  }
+
+  .sidebar-brand {
+    flex-direction: row;
+
+    margin: 0;
+
+    gap: 8px;
+  }
+
+  .sidebar-logo {
+    width: 30px;
+    height: 30px;
+
+    margin: 0;
+  }
+
+  .brand-subtitle {
+    display: none;
+  }
+
+  .brand-name {
+    font-size: 16px;
+  }
+
+  .sidebar-nav {
+    flex-direction: row;
+
+    margin-left: auto;
+
+    gap: 4px;
+  }
+
+  .nav-item {
+    width: auto;
+
+    min-height: 38px;
+
+    padding: 0 9px;
+  }
+
+  .nav-item span:last-child {
+    display: none;
+  }
+
+  .sidebar-bottom {
+    display: none;
+  }
+
+  .main-content {
     margin-left: 0;
 
     padding: 15px;
   }
 
   .stats-grid,
-  .recent-grid,
+  .recent-card-grid,
   .collection-grid,
-  .form-fields {
-    grid-template-columns:
-      1fr;
+  .feature-grid,
+  .form-grid {
+    grid-template-columns: 1fr;
   }
 
-  .collection-toolbar {
+  .collection-tools {
+    grid-template-columns: 1fr;
+  }
+
+  .collection-hero {
+    min-height: 165px;
+
+    padding: 25px;
+  }
+
+  .collection-hero h1 {
+    font-size: 34px;
+  }
+
+  .collection-grid .card-image-wrapper {
+    height: 270px;
+  }
+
+  .hero-title {
+    font-size: 36px;
+
+    letter-spacing: -0.8px;
+  }
+
+  .hero-description {
+    font-size: 13px;
+  }
+
+  .hero-button {
+    width: 100%;
+
+    min-height: 52px;
+  }
+
+  .details-content {
+    padding: 25px;
+  }
+
+  .details-content h1 {
+    font-size: 31px;
+  }
+
+  .form-actions {
     flex-direction: column;
   }
 
-  .collection-toolbar select {
-    width: 100%;
-
-    height: 40px;
-  }
-
-  .toolbar-add {
+  .form-actions button {
     width: 100%;
   }
 
-  .page-header {
-    padding: 16px;
+}
+
+/* =========================================================
+   ADD CARD PAGE — POKÉBINDER VISUAL PASS
+   Additive overrides for the Add/Edit Card screen only.
+========================================================= */
+
+.form-page-header {
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+  margin: 2px 0 22px;
+  padding: 22px 26px 24px;
+  border: 1.5px solid #9ed8ff;
+  border-radius: 20px;
+  background: linear-gradient(115deg, #f4fbff 0%, #e4f5ff 72%, #d8efff 100%);
+  box-shadow: 0 8px 20px rgba(20, 84, 132, 0.08);
+}
+
+.form-page-header::after {
+  content: "";
+  position: absolute;
+  z-index: -1;
+  width: 150px;
+  height: 150px;
+  right: -34px;
+  bottom: -88px;
+  border: 13px solid rgba(255, 255, 255, 0.62);
+  border-radius: 50%;
+  box-shadow: inset 0 0 0 16px rgba(255, 213, 47, 0.14);
+  pointer-events: none;
+}
+
+.form-page-header .back-button {
+  position: relative;
+  z-index: 1;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  margin: 0 0 16px;
+  padding: 8px 12px;
+  border: 1.5px solid #b9d7ec;
+  border-radius: 9px;
+  background: rgba(255, 255, 255, 0.88);
+  color: #24577f;
+  font-size: 12px;
+  font-weight: 900;
+  transition: transform 150ms ease, background 150ms ease;
+}
+
+.form-page-header .back-button:hover {
+  transform: translateY(-1px);
+  background: #fff;
+}
+
+.form-page-header .page-eyebrow {
+  position: relative;
+  z-index: 1;
+  margin: 0 0 5px;
+  color: #236398;
+  font-size: 11px;
+  font-weight: 900;
+  letter-spacing: 0.13em;
+  text-transform: uppercase;
+}
+
+.form-page-header h1 {
+  position: relative;
+  z-index: 1;
+  margin: 0;
+  color: #082f59;
+  font-family: 'Bowlby One SC', Impact, sans-serif;
+  font-size: clamp(30px, 3vw, 43px);
+  font-weight: 400;
+  line-height: 1.12;
+  letter-spacing: -0.7px;
+  text-shadow: 1px 1px 0 rgba(8, 47, 89, 0.08);
+}
+
+.form-page-header h1 .pokemon-title-word {
+  color: #ffd522;
+  -webkit-text-stroke: 2px #082f59;
+  text-shadow: 3px 4px 0 #082f59;
+}
+
+.form-page-header > p:last-child {
+  position: relative;
+  z-index: 1;
+  max-width: 620px;
+  margin: 9px 0 0;
+  color: #345f82;
+  font-size: 13px;
+  font-weight: 700;
+  line-height: 1.55;
+}
+
+.card-form {
+  border: 2px solid #c4dced;
+  border-radius: 18px;
+  box-shadow: 0 8px 22px rgba(34, 89, 132, 0.07);
+}
+
+.form-section {
+  padding: 27px 28px 30px;
+  border-bottom: 1px solid #e0edf6;
+}
+
+.form-section-title {
+  align-items: center;
+  gap: 14px;
+  margin-bottom: 23px;
+}
+
+.form-section-title > span {
+  width: 42px;
+  height: 42px;
+  flex-basis: 42px;
+  border: 2px solid #092f57;
+  border-radius: 12px;
+  background: #ffdf5c;
+  color: #092f57;
+  box-shadow: 0 3px 0 #092f57;
+  font-family: 'Bowlby One SC', Impact, sans-serif;
+  font-size: 14px;
+}
+
+.form-section-title h2 {
+  color: #092f57;
+  font-size: 21px;
+  line-height: 1.25;
+}
+
+.form-section-title p {
+  color: #71869a;
+  font-size: 12px;
+  line-height: 1.45;
+}
+
+.form-grid {
+  gap: 20px 18px;
+}
+
+.form-field {
+  gap: 8px;
+}
+
+.form-field > span {
+  color: #214b70;
+  font-size: 12px;
+  font-weight: 900;
+}
+
+.form-field input,
+.form-field select {
+  height: 48px;
+  padding: 0 14px;
+  border: 1.5px solid #bfd6e8;
+  border-radius: 10px;
+  background: #fafdff;
+  color: #12385e;
+  font-size: 13px;
+  font-weight: 700;
+  transition: border-color 150ms ease, box-shadow 150ms ease, background 150ms ease;
+}
+
+.form-field input::placeholder {
+  color: #93a8ba;
+  font-weight: 600;
+}
+
+.form-field input:focus,
+.form-field select:focus {
+  border-color: #1688ee;
+  background: #fff;
+  box-shadow: 0 0 0 4px rgba(8, 124, 240, 0.12);
+}
+
+.form-actions {
+  align-items: center;
+  padding: 20px 28px;
+  border-top: 1px solid #e1edf5;
+  background: #f4faff;
+}
+
+.form-actions .cancel-button,
+.form-actions .delete-button {
+  min-height: 46px;
+  border-radius: 10px;
+  font-weight: 900;
+}
+
+.form-actions .primary-button {
+  min-height: 48px;
+}
+
+@media (max-width: 650px) {
+  .form-page-header {
+    padding: 19px 18px 21px;
+    border-radius: 16px;
   }
 
-  .page-header-text h2 {
-    font-size: 23px;
+  .form-page-header h1 {
+    font-size: 30px;
   }
 
+  .form-section {
+    padding: 22px 18px;
+  }
+
+  .form-actions {
+    padding: 17px 18px;
+  }
+}
+
+
+/* =========================================================
+   CARD DETAILS PAGE — POKÉBINDER VISUAL PASS
+   Keeps existing behavior while matching the Home/Add Card design.
+========================================================= */
+
+.details-page {
+  border: 2px solid #c9e2f5;
+  border-radius: 20px;
+  box-shadow: 0 12px 28px rgba(8, 47, 89, 0.08);
+}
+
+.details-image {
+  min-width: 0;
+  background: linear-gradient(145deg, #fffbea 0%, #fff5c2 100%);
+}
+
+.details-image img {
+  border: 4px solid #ffd522;
+  border-radius: 3px;
+  box-shadow: 0 7px 0 rgba(8, 47, 89, 0.12), 0 15px 25px rgba(8, 47, 89, 0.12);
+}
+
+.details-content {
+  min-width: 0;
+  padding: 38px 36px;
+}
+
+.details-eyebrow {
+  margin: 0 0 8px;
+  color: #27628e;
+  font-family: 'Nunito', sans-serif;
+  font-size: 11px;
+  font-weight: 900;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+}
+
+.details-content h1.details-card-name {
+  margin: 0;
+  color: #082f59;
+  font-family: 'Bowlby One SC', Impact, sans-serif;
+  font-size: clamp(32px, 3vw, 48px);
+  font-weight: 400;
+  line-height: 1.08;
+  overflow-wrap: anywhere;
+}
+
+.details-card-name span {
+  color: #ffd522;
+  -webkit-text-stroke: 1.5px #082f59;
+  paint-order: stroke fill;
+  text-shadow: 3px 4px 0 #082f59;
+}
+
+.details-set {
+  margin: 10px 0 14px;
+  color: #58748e;
+  font-size: 14px;
+  font-weight: 800;
+}
+
+.details-rarity {
+  border: 1px solid #f1d66b;
+  border-radius: 9px;
+  background: #fff2bd;
+  color: #795600;
+  font-size: 11px;
+  font-weight: 900;
+}
+
+.details-table {
+  margin-top: 26px;
+  border: 2px solid #d4e5f2;
+  border-radius: 13px;
+  background: #fff;
+}
+
+.detail-row {
+  min-height: 54px;
+  padding: 0 16px;
+  border-bottom-color: #e5eef5;
+}
+
+.detail-row span {
+  color: #617c95;
+  font-size: 12px;
+  font-weight: 800;
+}
+
+.detail-row strong {
+  color: #082f59;
+  font-size: 13px;
+  font-weight: 900;
+  text-align: right;
+  overflow-wrap: anywhere;
+}
+
+.details-actions {
+  gap: 12px;
+  margin-top: 24px;
+}
+
+.details-actions .outline-button,
+.details-actions .delete-button {
+  min-height: 48px;
+  min-width: 112px;
+  padding: 0 20px;
+  border-radius: 11px;
+  font-family: 'Nunito', Arial, sans-serif;
+  font-size: 15px;
+  font-weight: 900;
+  letter-spacing: 0.2px;
+  line-height: 1.2;
+  text-transform: uppercase;
+  white-space: nowrap;
+  text-shadow: none;
+}
+
+.details-actions .outline-button {
+  border: 2px solid #8ec8f2;
+  background: #eaf7ff;
+  color: #082f59;
+}
+
+.details-actions .outline-button:hover {
+  background: #d8efff;
+}
+
+.details-actions .delete-button {
+  border: 2px solid #ff9da5;
+  background: #fff0f1;
+  color: #c51f32;
+}
+
+.details-actions .delete-button:hover {
+  background: #ffe0e3;
+}
+
+@media (max-width: 1100px) {
+  .details-page {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .details-image {
+    min-height: 390px;
+  }
+
+  .details-image img {
+    max-height: 360px;
+  }
+}
+
+@media (max-width: 650px) {
+  .details-content {
+    padding: 24px 20px;
+  }
+
+  .details-content h1.details-card-name {
+    font-size: 32px;
+  }
+
+  .details-image {
+    min-height: 320px;
+    padding: 24px;
+  }
+
+  .details-image img {
+    max-height: 280px;
+  }
+
+  .details-actions {
+    flex-direction: column;
+  }
+
+  .details-actions button {
+    width: 100%;
+  }
 }
