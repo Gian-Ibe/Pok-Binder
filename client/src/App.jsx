@@ -375,7 +375,7 @@ function App() {
         <div className="sidebar-brand">
 
           <img
-            src="/pokeball-logo.png"
+            src={`${import.meta.env.BASE_URL}pokeball-logo.png`}
             alt="PokéBinder"
             className="sidebar-logo"
           />
