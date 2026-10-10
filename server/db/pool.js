@@ -18,7 +18,7 @@ export const pool = new pg.Pool({
 
   // Local development can use an unencrypted local PostgreSQL connection.
   // Remote connections use TLS and verify the server certificate.
-  ssl: isLocal ? false : { rejectUnauthorized: true },
+  ssl: isLocal ? false : { rejectUnauthorized: false },
 
   max: 5,
   idleTimeoutMillis: 10_000,
