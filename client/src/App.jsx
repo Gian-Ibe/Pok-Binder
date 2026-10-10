@@ -63,7 +63,14 @@ function App() {
 
       const data = await response.json()
 
-      setCards(Array.isArray(data) ? data : [])
+      setCards(
+  Array.isArray(data)
+    ? data.map((card) => ({
+        ...card,
+        cardNumber: card.cardNumber ?? card.card_number ?? '',
+      }))
+    : []
+)
     } catch (err) {
       console.error(err)
 
@@ -114,7 +121,7 @@ function App() {
     setForm({
       name: card.name || '',
       set: card.set || '',
-      cardNumber: card.cardNumber || '',
+      cardNumber: card.cardNumber ?? card.card_number ?? '',
       rarity: card.rarity || 'Common',
       condition: card.condition || 'Near Mint',
       quantity: card.quantity ?? 1,
