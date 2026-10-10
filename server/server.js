@@ -72,12 +72,6 @@ app.use('/api', rateLimit({
 
 app.use(express.json({ limit: '100kb' }))
 
-// Require Basic Authentication only in production.
-// Local development does not require a login screen.
-if (process.env.NODE_ENV === 'production') {
-  app.use(basicAuth)
-}
-
 // Health check
 app.get('/healthz', (request, response) => {
   response.json({ ok: true })
