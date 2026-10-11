@@ -94,12 +94,12 @@ Make sure the backend is running and connected to PostgreSQL. Add a sample card,
 
 ## Presentation
 
-- **Video (public Google Drive link):** ADD_YOUR_PUBLIC_VIDEO_LINK
-- **Slides (link or PDF):** ADD_YOUR_SLIDES_LINK
-- **Square image:** Add the project square logo image to this folder, or provide a public link to it.
+- **Video [(public Google Drive link):**](https://github.com/Gian-Ibe/Pok-Binder/blob/main/docs/05-demo-video.md)
+- **Slides [(link or PDF):**](https://github.com/Gian-Ibe/Pok-Binder/blob/main/docs/05-demo-video.md)
+- [**Square image:**](https://github.com/Gian-Ibe/Pok-Binder/blob/main/docs/05-demo-video.md)
 
 Make sure the video and slides links are accessible to your instructor.
 
 ## AI usage
 
-AI usage record: https://github.com/Gian-Ibe/Pok-Binder/blob/main/AI-usage.md
+AI usage record: [https://github.com/Gian-Ibe/Pok-Binder/blob/main/AI-usage.md](https://github.com/Gian-Ibe/Pok-Binder/blob/main/project/AI-USAGE.md)
